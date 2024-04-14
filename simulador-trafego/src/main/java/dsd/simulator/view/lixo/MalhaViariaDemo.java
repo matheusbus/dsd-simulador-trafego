@@ -67,7 +67,7 @@ public class MalhaViariaDemo extends JFrame {
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
-                ImageIcon imageIcon = new ImageIcon("C:\\GitHub\\dsd-simulador-trafego\\simulador-trafego\\src\\main\\resources\\road-piece.png");
+                ImageIcon imageIcon = new ImageIcon("C:\\GitHub\\dsd-simulador-trafego\\simulador-trafego\\src\\main\\resources\\road.png");
                 Image image = imageIcon.getImage();
                 g.drawImage(image, 0, 0, getWidth(), getHeight(), this);
             }
