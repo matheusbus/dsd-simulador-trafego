@@ -1,5 +1,6 @@
 package dsd.simulator.factory;
 
+import dsd.simulator.domain.RoadNetwork;
 import dsd.simulator.domain.Vehicle;
 import dsd.simulator.domain.VehicleColor;
 import java.util.Random;
@@ -8,10 +9,10 @@ public class VehicleFactory {
 
     private static final Random random = new Random();
     
-    public static Vehicle createVehicle() {
+    public static Vehicle createVehicle(RoadNetwork roadNetwork) {
         VehicleColor color = getRandomColor();
         int sleepTime = getRandomSleepTime();
-        return new Vehicle(color, sleepTime);
+        return new Vehicle(color, sleepTime, roadNetwork);
     }
     
     private static VehicleColor getRandomColor() {
