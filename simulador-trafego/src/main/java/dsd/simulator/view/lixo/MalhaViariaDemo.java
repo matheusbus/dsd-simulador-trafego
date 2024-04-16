@@ -13,6 +13,7 @@ import java.awt.*;
 import java.net.URL;
 import java.util.Random;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
@@ -25,40 +26,62 @@ import javax.swing.SwingUtilities;
  */
 public class MalhaViariaDemo extends JFrame {
 
+    private static final int CELL_SIZE = 25;
+    private static final int MARGIN = 10;
+
     public MalhaViariaDemo() {
         super("Malha Viária com Veículo");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(500, 500);
         setLocationRelativeTo(null);
 
         JLayeredPane layeredPane = new JLayeredPane();
         setContentPane(layeredPane);
         RoadNetworkFactory factory = new RoadNetworkFactory();
-        RoadNetwork network = factory.createRoadNetwork(3);
+        RoadNetwork network = factory.createRoadNetwork(2);
         RoadSection[][] roadSections = network.getRoadSections();
 
         int rows = roadSections.length;
         int cols = roadSections[0].length;
 
+        int cellWidth = 25; // Largura da célula
+        int cellHeight = 25; // Altura da célula
+        int margin = 10; // Margem adicional
+
+        // Calcula o tamanho necessário da tela
+        int screenWidth = (cols + 10) * cellWidth + margin;
+        int screenHeight = (rows + 1) * cellHeight + margin;
+
+        // Define o tamanho da tela
+        setSize(screenWidth, screenHeight);
+
         // Adiciona as células da malha viária
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
                 RoadSection section = roadSections[i][j];
-                // Assuming you have a method to map RoadType to cell type (tipoCelula)
                 RoadType roadType = section.getType();
                 if (roadType != null) {
                     JPanel celulaPanel = criarCelulaPanel(roadType);
-                    celulaPanel.setBounds(j * 25, i * 25, 25, 25);
+                    celulaPanel.setBounds(j * cellWidth, i * cellHeight, cellWidth, cellHeight);
                     layeredPane.add(celulaPanel, Integer.valueOf(0)); // Adiciona na camada de fundo (índice 0)
                 }
             }
         }
 
+        // Cria um JPanel para os botões
+        JPanel botoesPanel = new JPanel();
+        botoesPanel.setLayout(new GridLayout(3, 1, 0, 5)); // Layout GridLayout com 3 linhas e 1 coluna
+        JButton button1 = new JButton("Botão 1");
+        JButton button2 = new JButton("Botão 2");
+        JButton button3 = new JButton("Botão 3");
+        botoesPanel.add(button1);
+        botoesPanel.add(button2);
+        botoesPanel.add(button3);
+        layeredPane.add(botoesPanel, BorderLayout.EAST); // Adiciona à direita do JPanel da malha viária
+
         // Adiciona um veículo em uma posição específica (por exemplo, na célula [1,1])
         JLabel veiculoLabel = criarVeiculoLabel();
-        veiculoLabel.setBounds(25,25,25,25); // Posição desejada
+        veiculoLabel.setBounds(25, 25, cellWidth, cellHeight); // Posição desejada
         layeredPane.add(veiculoLabel, Integer.valueOf(1)); // Adiciona na camada superior (índice 1)
-
     }
 
     private JPanel criarCelulaPanel(RoadType roadType) {
@@ -111,12 +134,13 @@ public class MalhaViariaDemo extends JFrame {
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
-                ImageIcon imageIcon = new ImageIcon("/home/matheus/Documentos/GitHub/dsd-simulador-trafego/simulador-trafego/src/main/resources/"+arqName+".png");
+                String path = System.getProperty("user.dir") + "/src/main/resources/" + arqName + ".png";
+                ImageIcon imageIcon = new ImageIcon(path);
                 Image image = imageIcon.getImage();
                 g.drawImage(image, 0, 0, getWidth(), getHeight(), this);
             }
         };
-        celulaPanel.setPreferredSize(new Dimension(25,25));
+        celulaPanel.setPreferredSize(new Dimension(25, 25));
         return celulaPanel;
     }
 
@@ -125,9 +149,10 @@ public class MalhaViariaDemo extends JFrame {
         int code = r.nextInt(1, 6);
         VehicleColor vc = VehicleColor.valueOf(code);
         String vcString = vc.toString().toLowerCase();
-        ImageIcon icon = new ImageIcon("/home/matheus/Documentos/GitHub/dsd-simulador-trafego/simulador-trafego/src/main/resources/vehicle-" + vcString + ".png");
+        String path = System.getProperty("user.dir") + "/src/main/resources/vehicle-" + vcString + ".png";
+        ImageIcon icon = new ImageIcon(path);
         JLabel label = new JLabel(icon);
-        label.setPreferredSize(new Dimension(25,25));
+        label.setPreferredSize(new Dimension(25, 25));
         return label;
     }
 
