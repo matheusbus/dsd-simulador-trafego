@@ -43,7 +43,7 @@ public class RoadNetworkFactory {
                 for (int j = 0; j < x; j++) {
                     Integer rtStr = Integer.valueOf(values[j]);
                     RoadType rt = RoadType.valueOf(rtStr);
-                    RoadSection roadSection = new RoadSection(rt, null);
+                    RoadSection roadSection = new RoadSection(rt, null, j, i);
                     roadSections[i][j] = roadSection;
                 }
             }
@@ -69,6 +69,17 @@ public class RoadNetworkFactory {
 
         return null;
     }
+    
+    public int[] calculateNextSections(RoadType rt, int i, int j) {
+        return switch (rt) {
+            case NONE -> null;
+            case ROAD_DOWN -> new int[]{i, j+1};
+            case ROAD_UP -> new int[]{i, j-1};
+            case ROAD_LEFT -> new int[]{i-1, j};
+            case ROAD_RIGHT -> new int[]{i+1, j};
+            default -> null;
+        };
+    }
 
     public static void imprimir(RoadNetwork roadNetwork) {
         RoadSection[][] roadSections = roadNetwork.getRoadSections();
@@ -76,7 +87,7 @@ public class RoadNetworkFactory {
         System.out.println("Matrix:");
         for (int i = 0; i < roadSections.length; i++) {
             for (int j = 0; j < roadSections[i].length; j++) {
-                System.out.print(roadSections[i][j].getType().getCode() + " ");
+                System.out.print(roadSections[i][j].getType().getCode() + "[" + i + "]" + "[" + j + "] ");
             }
             System.out.println(); // Move to the next line after printing each row
         }

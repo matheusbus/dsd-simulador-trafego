@@ -12,7 +12,8 @@ public class VehicleFactory {
     public static Vehicle createVehicle(RoadNetwork roadNetwork) {
         VehicleColor color = getRandomColor();
         int sleepTime = getRandomSleepTime();
-        return new Vehicle(color, sleepTime, roadNetwork);
+//        return new Vehicle(color, sleepTime, roadNetwork);
+        return null;
     }
     
     private static VehicleColor getRandomColor() {
@@ -21,8 +22,8 @@ public class VehicleFactory {
     }
     
     private static Integer getRandomSleepTime() {
-        // Aqui validar regra com professor. Gerando time aleatório entre 0.1s e 5s
-        return random.nextInt(100, 5000);
+        // Aqui validar regra com professor. Gerando time aleatório entre 0.1s e 1s
+        return random.nextInt(100, 1000);
     }
 
 }

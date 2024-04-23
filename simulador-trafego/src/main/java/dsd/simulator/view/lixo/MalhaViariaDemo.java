@@ -10,7 +10,6 @@ import dsd.simulator.domain.RoadType;
 import dsd.simulator.domain.VehicleColor;
 import dsd.simulator.factory.RoadNetworkFactory;
 import java.awt.*;
-import java.net.URL;
 import java.util.Random;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -26,9 +25,6 @@ import javax.swing.SwingUtilities;
  */
 public class MalhaViariaDemo extends JFrame {
 
-    private static final int CELL_SIZE = 25;
-    private static final int MARGIN = 10;
-
     public MalhaViariaDemo() {
         super("Malha Viária com Veículo");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -37,7 +33,7 @@ public class MalhaViariaDemo extends JFrame {
         JLayeredPane layeredPane = new JLayeredPane();
         setContentPane(layeredPane);
         RoadNetworkFactory factory = new RoadNetworkFactory();
-        RoadNetwork network = factory.createRoadNetwork(2);
+        RoadNetwork network = factory.createRoadNetwork(3);
         RoadSection[][] roadSections = network.getRoadSections();
 
         int rows = roadSections.length;
