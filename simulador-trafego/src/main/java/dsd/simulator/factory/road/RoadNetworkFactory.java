@@ -2,15 +2,16 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package dsd.simulator.factory;
+package dsd.simulator.factory.road;
 
-import dsd.simulator.domain.RoadNetwork;
-import dsd.simulator.domain.RoadSection;
-import dsd.simulator.domain.RoadType;
+import dsd.simulator.domain.road.RoadNetwork;
+import dsd.simulator.domain.road.RoadSection;
+import dsd.simulator.domain.road.RoadType;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  *
@@ -35,6 +36,7 @@ public class RoadNetworkFactory {
 
             Integer y = Integer.valueOf(br.readLine().trim());
             Integer x = Integer.valueOf(br.readLine().trim());
+            RoadNetwork network = new RoadNetwork();
             RoadSection[][] roadSections = new RoadSection[y][x];
 
             for (int i = 0; i < y; i++) {
@@ -45,10 +47,16 @@ public class RoadNetworkFactory {
                     RoadType rt = RoadType.valueOf(rtStr);
                     RoadSection roadSection = new RoadSection(rt, null, j, i);
                     roadSections[i][j] = roadSection;
+                    
+                    if((i == 0 && roadSection.getType().equals(RoadType.ROAD_DOWN)) ||
+                       (i == (y-1) && roadSection.getType().equals(RoadType.ROAD_UP)) ||
+                       (j == 0 && roadSection.getType().equals(RoadType.ROAD_RIGHT)) ||
+                       (j == (x-1) && roadSection.getType().equals(RoadType.ROAD_LEFT))) {
+                        network.addEntryPoint(roadSection);
+                    }
                 }
             }
             
-            RoadNetwork network = new RoadNetwork();
             network.setRoadSections(roadSections);
             return network;
 
@@ -91,11 +99,6 @@ public class RoadNetworkFactory {
             }
             System.out.println(); // Move to the next line after printing each row
         }
-    }
-
-    public static void main(String[] args) {
-        imprimir(createRoadNetwork(1));
-
     }
 
 }

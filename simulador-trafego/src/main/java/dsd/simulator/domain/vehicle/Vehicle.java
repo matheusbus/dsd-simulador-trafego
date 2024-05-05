@@ -1,5 +1,8 @@
-package dsd.simulator.domain;
+package dsd.simulator.domain.vehicle;
 
+import dsd.simulator.domain.road.RoadNetwork;
+import dsd.simulator.domain.road.RoadSection;
+import dsd.simulator.domain.road.RoadType;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -47,7 +50,7 @@ public class Vehicle extends Thread {
                     boolean entered = rd.enter(sleepTime);
                     
                     if(entered) {
-                        roadNetwork.move(this);
+                        roadNetwork.move(this, this.getRoadSection(), rd);
                         
                         rd.exit();
                     } else {

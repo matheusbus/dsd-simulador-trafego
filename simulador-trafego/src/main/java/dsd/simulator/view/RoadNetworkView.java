@@ -2,14 +2,15 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package dsd.simulator.view.lixo;
+package dsd.simulator.view;
 
-import dsd.simulator.domain.RoadNetwork;
-import dsd.simulator.domain.RoadSection;
-import dsd.simulator.domain.RoadType;
-import dsd.simulator.domain.VehicleColor;
-import dsd.simulator.factory.RoadNetworkFactory;
+import dsd.simulator.domain.road.RoadNetwork;
+import dsd.simulator.domain.road.RoadSection;
+import dsd.simulator.domain.road.RoadType;
+import dsd.simulator.domain.vehicle.VehicleColor;
+import dsd.simulator.factory.road.RoadNetworkFactory;
 import java.awt.*;
+import java.awt.event.ActionListener;
 import java.util.Random;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -17,23 +18,25 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
+import javax.swing.JTextField;
 
 /**
  *
  * @author Matheus
  */
-public class MalhaViariaDemo extends JFrame {
+public class RoadNetworkView extends JFrame {
 
-    public MalhaViariaDemo() {
+    private final JTextField txtNumberVehicles;
+    private final JButton btnInit;
+    
+    public RoadNetworkView(RoadNetwork network) {
         super("Malha Viária com Veículo");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
         JLayeredPane layeredPane = new JLayeredPane();
         setContentPane(layeredPane);
-        RoadNetworkFactory factory = new RoadNetworkFactory();
-        RoadNetwork network = factory.createRoadNetwork(3);
+        
         RoadSection[][] roadSections = network.getRoadSections();
 
         int rows = roadSections.length;
@@ -63,67 +66,41 @@ public class MalhaViariaDemo extends JFrame {
             }
         }
 
-        // Cria um JPanel para os botões
-        JPanel botoesPanel = new JPanel();
-        botoesPanel.setLayout(new GridLayout(3, 1, 0, 5)); // Layout GridLayout com 3 linhas e 1 coluna
-        JButton button1 = new JButton("Botão 1");
-        JButton button2 = new JButton("Botão 2");
-        JButton button3 = new JButton("Botão 3");
-        botoesPanel.add(button1);
-        botoesPanel.add(button2);
-        botoesPanel.add(button3);
-        layeredPane.add(botoesPanel, BorderLayout.EAST); // Adiciona à direita do JPanel da malha viária
+        // Cria um JPanel para os elementos à direita
+        JPanel direitaPanel = new JPanel();
+        //direitaPanel.setLayout(new GridLayout(30, 1));
+        direitaPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+        
+        JLabel label = new JLabel("Veículos:");
+        this.txtNumberVehicles = new JTextField();
+        txtNumberVehicles.setPreferredSize(new Dimension(50, 20));
+        btnInit = new JButton("Iniciar");
+        direitaPanel.add(label);
+        direitaPanel.add(txtNumberVehicles);
+        direitaPanel.add(btnInit);
+        direitaPanel.setBounds(screenWidth - 150, 0, 150, screenHeight); // Posição à direita
+        layeredPane.add(direitaPanel, Integer.valueOf(1)); // Adiciona na camada superior (índice 1)
 
-        // Adiciona um veículo em uma posição específica (por exemplo, na célula [1,1])
-        JLabel veiculoLabel = criarVeiculoLabel();
-        veiculoLabel.setBounds(25, 25, cellWidth, cellHeight); // Posição desejada
-        layeredPane.add(veiculoLabel, Integer.valueOf(1)); // Adiciona na camada superior (índice 1)
     }
 
     private JPanel criarCelulaPanel(RoadType roadType) {
         final String arqName;
+        
         switch (roadType) {
-            case NONE:
-                arqName = "none";
-                break;
-            case ROAD_UP:
-                arqName = "road-up";
-                break;
-            case ROAD_DOWN:
-                arqName = "road-down";
-                break;
-            case ROAD_LEFT:
-                arqName = "road-left";
-                break;
-            case ROAD_RIGHT:
-                arqName = "road-right";
-                break;
-            case CROSSROAD_DOWN:
-                arqName = "chess";
-                break;
-            case CROSSROAD_DOWN_LEFT:
-                arqName = "chess";
-                break;
-            case CROSSROAD_LEFT:
-                arqName = "chess";
-                break;
-            case CROSSROAD_RIGHT:
-                arqName = "chess";
-                break;
-            case CROSSROAD_UP:
-                arqName = "chess";
-                break;
-            case CROSSROAD_UP_LEFT:
-                arqName = "chess";
-                break;
-            case CROSSROAD_UP_RIGHT:
-                arqName = "chess";
-                break;
-            case CROSSROAD_RIGHT_DOWN:
-                arqName = "chess";
-                break;
-            default:
-                throw new AssertionError();
+            case NONE -> arqName = "none";
+            case ROAD_UP -> arqName = "road-up";
+            case ROAD_DOWN -> arqName = "road-down";
+            case ROAD_LEFT -> arqName = "road-left";
+            case ROAD_RIGHT -> arqName = "road-right";
+            case CROSSROAD_DOWN -> arqName = "chess";
+            case CROSSROAD_DOWN_LEFT -> arqName = "chess";
+            case CROSSROAD_LEFT -> arqName = "chess";
+            case CROSSROAD_RIGHT -> arqName = "chess";
+            case CROSSROAD_UP -> arqName = "chess";
+            case CROSSROAD_UP_LEFT -> arqName = "chess";
+            case CROSSROAD_UP_RIGHT -> arqName = "chess";
+            case CROSSROAD_RIGHT_DOWN -> arqName = "chess";
+            default -> throw new AssertionError();
         }
 
         JPanel celulaPanel = new JPanel() {
@@ -151,12 +128,19 @@ public class MalhaViariaDemo extends JFrame {
         label.setPreferredSize(new Dimension(25, 25));
         return label;
     }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            MalhaViariaDemo malhaViaria = new MalhaViariaDemo();
-            malhaViaria.setVisible(true);
-        });
+    
+    public Integer getNumberVehicles() {
+        int num = 0;
+        try {
+            num = Integer.parseInt(txtNumberVehicles.getText());
+        } catch (NumberFormatException ex) {
+            ex.printStackTrace();
+        }
+        return num;
+    }
+    
+    public void addActionToInitButton(ActionListener actionListener) {
+        btnInit.addActionListener(actionListener);
     }
 
 }

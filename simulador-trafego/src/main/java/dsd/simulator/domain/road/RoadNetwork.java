@@ -1,5 +1,6 @@
-package dsd.simulator.domain;
+package dsd.simulator.domain.road;
 
+import dsd.simulator.domain.vehicle.Vehicle;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,9 +10,12 @@ public class RoadNetwork {
     private Vehicle[][] vehiclePositions;
     
     private final List<Vehicle> vehicles;
+    
+    private final List<RoadSection> entryPoints;
 
     public RoadNetwork() {
         vehicles = new ArrayList<>();
+        entryPoints = new ArrayList<>();
     }
 
     public RoadSection[][] getRoadSections() {
@@ -34,30 +38,28 @@ public class RoadNetwork {
         this.vehiclePositions = vehiclePositions;
     }
     
-    public synchronized boolean move(Vehicle vehicle) {
-        int[] currentPosition = findVehiclePosition(vehicle);
+    public synchronized boolean move(Vehicle vehicle, RoadSection actual, RoadSection next) {
+        int[] vehiclePosition = {actual.getPositionX(), actual.getPositionY()};
         
-        int[] nextPosition = {currentPosition[0], currentPosition[1] + 1};
+        
+        
+        int[] nextPosition = {next.getPositionX(), next.getPositionY()};
         if (nextPosition[1] < roadSections[0].length && vehiclePositions[nextPosition[0]][nextPosition[1]] == null) {
             // If the next section is within bounds and is free, move the vehicle
             vehiclePositions[currentPosition[0]][currentPosition[1]] = null; // Release current position
             vehiclePositions[nextPosition[0]][nextPosition[1]] = vehicle; // Update vehicle position
             return true;
         } else {
-            // If the next section is not free or is out of bounds, cannot move the vehicle
+            // Se não conseguir mover
             return false;
         }
     }
     
-    private int[] findVehiclePosition(Vehicle vehicle) {
-        // Find the position of the vehicle in the vehicle positions matrix
-        for (int i = 0; i < vehiclePositions.length; i++) {
-            for (int j = 0; j < vehiclePositions[i].length; j++) {
-                if (vehiclePositions[i][j] == vehicle) {
-                    return new int[]{i, j};
-                }
-            }
-        }
-        return null; // Vehicle not found
+    public void addEntryPoint(RoadSection entryPoint) {
+        this.entryPoints.add(entryPoint);
+    }
+    
+    public List<RoadSection> getEntryPoints() {
+        return this.entryPoints;
     }
 }

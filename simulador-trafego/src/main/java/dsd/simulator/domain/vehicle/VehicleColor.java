@@ -1,4 +1,4 @@
-package dsd.simulator.domain;
+package dsd.simulator.domain.vehicle;
 
 public enum VehicleColor {
     
