@@ -40,13 +40,11 @@ public class RoadNetwork {
     
     public synchronized boolean move(Vehicle vehicle, RoadSection actual, RoadSection next) {
         int[] vehiclePosition = {actual.getPositionX(), actual.getPositionY()};
-        
-        
-        
         int[] nextPosition = {next.getPositionX(), next.getPositionY()};
+
         if (nextPosition[1] < roadSections[0].length && vehiclePositions[nextPosition[0]][nextPosition[1]] == null) {
             // If the next section is within bounds and is free, move the vehicle
-            vehiclePositions[currentPosition[0]][currentPosition[1]] = null; // Release current position
+            //vehiclePositions[currentPosition[0]][currentPosition[1]] = null; // Release current position
             vehiclePositions[nextPosition[0]][nextPosition[1]] = vehicle; // Update vehicle position
             return true;
         } else {
