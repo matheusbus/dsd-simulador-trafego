@@ -1,18 +1,11 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package dsd.simulator.controller;
 
 import dsd.simulator.domain.road.RoadNetwork;
-import dsd.simulator.domain.road.RoadSection;
-import dsd.simulator.domain.vehicle.Vehicle;
+import dsd.simulator.domain.section.RoadSection;
+import dsd.simulator.factory.road.MonitorRoadNetworkFactory;
 import dsd.simulator.factory.road.RoadNetworkFactory;
-import dsd.simulator.factory.vehicle.VehicleFactory;
+import dsd.simulator.factory.road.SemaphoreRoadNetworkFactory;
 import dsd.simulator.view.RoadNetworkView;
-import java.util.Random;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -20,49 +13,53 @@ import java.util.logging.Logger;
  */
 public final class RoadNetworkController {
 
-    private RoadNetworkView view;
-    private RoadNetwork network;
-    private int activeVehicles;
-    private int maxVehicles;
+    private final RoadNetworkView rnv;
+    private final RoadNetwork roadNetwork;
 
-    public RoadNetworkController(int indexOfFile) {
-        this.network = RoadNetworkFactory.createRoadNetwork(indexOfFile);
-        this.view = new RoadNetworkView(network);
+    public RoadNetworkController(String roadFileName, String implementationType) {
+        RoadNetworkFactory factory;
+
+        switch (implementationType) {
+            case "Semaphore" ->
+                factory = new SemaphoreRoadNetworkFactory();
+            case "Monitor" ->
+                factory = new MonitorRoadNetworkFactory();
+            default ->
+                throw new IllegalArgumentException("Selected implementation type does not exists.");
+        }
+        this.roadNetwork = factory.createRoadNetwork(roadFileName);
+
+        this.rnv = new RoadNetworkView(roadNetwork);
         initButtons();
-        
-        this.view.setVisible(true);
+        this.rnv.setVisible(true);
+
+        // Método mockado
+        //startTraffic();
     }
-    
+
     public void initButtons() {
-        view.addActionToInitButton(((e) -> {
+        rnv.addActionToInitButton(((e) -> {
             startTraffic();
         }));
     }
-    
+
     public void startTraffic() {
-        this.maxVehicles = view.getNumberVehicles();
-        
-        for(int i = 0; i < maxVehicles; i++) {
-            addVehicleInNetwork();
-        }
+        Integer maxActiveVehicles = rnv.getSelectedNumberVehicles();
+
+        roadNetwork
+            .setMaxActiveVehicles(maxActiveVehicles)
+            .startSimulation();
     }
-    
-    public void addVehicleInNetwork() {
-        Random r = new Random();
-        int numberOfEntryPoints = network.getEntryPoints().size();
-        
-        int entry = r.nextInt(numberOfEntryPoints);
-        RoadSection rs = network.getEntryPoints().get(entry);
-        
-        Vehicle v = VehicleFactory.createVehicle(network, rs);
-        
-        try {
-            if(rs.enter(5000)) {
-                rs.setVehicle(v);
-                v.start();
+
+    public void imprimir(RoadNetwork roadNetwork) {
+        RoadSection[][] roadSections = roadNetwork.getRoadSections();
+
+        for (int i = 0; i < roadSections.length; i++) {
+            for (int j = 0; j < roadSections[i].length; j++) {
+                System.out.print(roadSections[i][j].getType().getCode() + "[" + i + "]" + "[" + j + "] "
+                        + (roadSections[i][j].getVehicle() == null ? "[X]" : "[ ]"));
             }
-        } catch (InterruptedException ex) {
-            Logger.getLogger(RoadNetworkController.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println();
         }
     }
 }

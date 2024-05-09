@@ -1,10 +1,7 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package dsd.simulator;
 
-import dsd.simulator.controller.RoadNetworkController;
+import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatMaterialOceanicIJTheme;
+import dsd.simulator.controller.InitialMenuController;
 
 /**
  *
@@ -13,7 +10,10 @@ import dsd.simulator.controller.RoadNetworkController;
 public class App {
     
     public static void main(String[] args) {
-        RoadNetworkController controller = new RoadNetworkController(3);
+        FlatMaterialOceanicIJTheme.setup();
+        
+        // Chamada do controlador da tela inicial
+        var c = new InitialMenuController();
     }
     
 }

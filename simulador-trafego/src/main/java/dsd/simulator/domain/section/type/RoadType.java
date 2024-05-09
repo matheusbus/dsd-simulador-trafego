@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package dsd.simulator.domain.road;
+package dsd.simulator.domain.section.type;
 
 /**
  *
@@ -21,7 +21,7 @@ public enum RoadType {
     CROSSROAD_LEFT(8),
     CROSSROAD_UP_RIGHT(9),
     CROSSROAD_UP_LEFT(10),
-    CROSSROAD_RIGHT_DOWN(11),
+    CROSSROAD_DOWN_RIGHT(11),
     CROSSROAD_DOWN_LEFT(12);
 
     private final int code;

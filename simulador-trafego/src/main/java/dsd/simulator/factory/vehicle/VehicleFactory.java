@@ -1,28 +1,23 @@
 package dsd.simulator.factory.vehicle;
 
 import dsd.simulator.domain.road.RoadNetwork;
-import dsd.simulator.domain.road.RoadSection;
 import dsd.simulator.domain.vehicle.Vehicle;
 import dsd.simulator.domain.vehicle.VehicleColor;
 import java.util.Random;
 
-public class VehicleFactory {
+public abstract class VehicleFactory {
 
-    private static final Random random = new Random();
+    protected static final Random random = new Random();
     
-    public static Vehicle createVehicle(RoadNetwork roadNetwork, RoadSection roadSection) {
-        VehicleColor color = getRandomColor();
-        int sleepTime = getRandomSleepTime();
-        return new Vehicle(color, sleepTime, roadNetwork, roadSection);
-    }
+    public abstract Vehicle createVehicle(RoadNetwork roadNetwork);
     
-    private static VehicleColor getRandomColor() {
+    protected VehicleColor getRandomColor() {
         VehicleColor[] colors = VehicleColor.values();
         return colors[random.nextInt(colors.length)];
     }
     
-    private static Integer getRandomSleepTime() {
-        // Aqui validar regra com professor. Gerando time aleatório entre 0.3s e 2s
+    protected Integer getRandomSleepTime() {
+        // Validar possibilidade de permitir o usuário escolher velocidade mínima e velocidade máxima
         return random.nextInt(300, 2000);
     }
 

@@ -4,12 +4,14 @@
  */
 package dsd.simulator.observer;
 
+import dsd.simulator.domain.section.RoadSection;
+
 /**
  *
  * @author Matheus
  */
-public interface VehicleObserver {
+public interface RoadSectionObserver {
     
-    void onVehiclePositionChanged(int x, int y);
-    
+    void onSectionStateChanged(RoadSection roadSection, boolean hasVehicle);
+
 }

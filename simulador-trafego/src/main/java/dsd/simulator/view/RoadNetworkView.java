@@ -1,14 +1,9 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package dsd.simulator.view;
 
 import dsd.simulator.domain.road.RoadNetwork;
-import dsd.simulator.domain.road.RoadSection;
-import dsd.simulator.domain.road.RoadType;
+import dsd.simulator.domain.section.RoadSection;
 import dsd.simulator.domain.vehicle.VehicleColor;
-import dsd.simulator.factory.road.RoadNetworkFactory;
+import dsd.simulator.observer.RoadSectionObservable;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.util.Random;
@@ -19,28 +14,32 @@ import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import dsd.simulator.observer.RoadSectionObserver;
+import dsd.simulator.view.component.NumberOfVehiclesTextField;
+import javax.swing.SwingUtilities;
 
 /**
  *
  * @author Matheus
  */
-public class RoadNetworkView extends JFrame {
+public class RoadNetworkView extends JFrame implements RoadSectionObserver {
 
     private final JTextField txtNumberVehicles;
     private final JButton btnInit;
-    
+    private final JPanel[][] celulaPanels;
+
     public RoadNetworkView(RoadNetwork network) {
         super("Malha Viária com Veículo");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
 
         JLayeredPane layeredPane = new JLayeredPane();
         setContentPane(layeredPane);
-        
+
         RoadSection[][] roadSections = network.getRoadSections();
 
         int rows = roadSections.length;
         int cols = roadSections[0].length;
+        celulaPanels = new JPanel[rows][cols];
 
         int cellWidth = 25; // Largura da célula
         int cellHeight = 25; // Altura da célula
@@ -57,12 +56,13 @@ public class RoadNetworkView extends JFrame {
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
                 RoadSection section = roadSections[i][j];
-                RoadType roadType = section.getType();
-                if (roadType != null) {
-                    JPanel celulaPanel = criarCelulaPanel(roadType);
-                    celulaPanel.setBounds(j * cellWidth, i * cellHeight, cellWidth, cellHeight);
-                    layeredPane.add(celulaPanel, Integer.valueOf(0)); // Adiciona na camada de fundo (índice 0)
-                }
+                JPanel celulaPanel = criarCelulaPanel(section);
+                celulaPanel.setBounds(j * cellWidth, i * cellHeight, cellWidth, cellHeight);
+                layeredPane.add(celulaPanel, Integer.valueOf(0)); // Adiciona na camada de fundo (índice 0)
+                celulaPanels[i][j] = celulaPanel; // Adiciona o painel à matriz
+
+                // Registra esta instância como observador da seção de estrada
+                section.addObserver(this);
             }
         }
 
@@ -70,9 +70,9 @@ public class RoadNetworkView extends JFrame {
         JPanel direitaPanel = new JPanel();
         //direitaPanel.setLayout(new GridLayout(30, 1));
         direitaPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
-        
+
         JLabel label = new JLabel("Veículos:");
-        this.txtNumberVehicles = new JTextField();
+        this.txtNumberVehicles = new NumberOfVehiclesTextField();
         txtNumberVehicles.setPreferredSize(new Dimension(50, 20));
         btnInit = new JButton("Iniciar");
         direitaPanel.add(label);
@@ -81,33 +81,16 @@ public class RoadNetworkView extends JFrame {
         direitaPanel.setBounds(screenWidth - 150, 0, 150, screenHeight); // Posição à direita
         layeredPane.add(direitaPanel, Integer.valueOf(1)); // Adiciona na camada superior (índice 1)
 
+        
+        setLocationRelativeTo(null);
     }
 
-    private JPanel criarCelulaPanel(RoadType roadType) {
-        final String arqName;
-        
-        switch (roadType) {
-            case NONE -> arqName = "none";
-            case ROAD_UP -> arqName = "road-up";
-            case ROAD_DOWN -> arqName = "road-down";
-            case ROAD_LEFT -> arqName = "road-left";
-            case ROAD_RIGHT -> arqName = "road-right";
-            case CROSSROAD_DOWN -> arqName = "chess";
-            case CROSSROAD_DOWN_LEFT -> arqName = "chess";
-            case CROSSROAD_LEFT -> arqName = "chess";
-            case CROSSROAD_RIGHT -> arqName = "chess";
-            case CROSSROAD_UP -> arqName = "chess";
-            case CROSSROAD_UP_LEFT -> arqName = "chess";
-            case CROSSROAD_UP_RIGHT -> arqName = "chess";
-            case CROSSROAD_RIGHT_DOWN -> arqName = "chess";
-            default -> throw new AssertionError();
-        }
-
+    private JPanel criarCelulaPanel(RoadSection roadSection) {
         JPanel celulaPanel = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
-                String path = System.getProperty("user.dir") + "/src/main/resources/" + arqName + ".png";
+                String path = roadSection.getImageStrPath();
                 ImageIcon imageIcon = new ImageIcon(path);
                 Image image = imageIcon.getImage();
                 g.drawImage(image, 0, 0, getWidth(), getHeight(), this);
@@ -128,8 +111,47 @@ public class RoadNetworkView extends JFrame {
         label.setPreferredSize(new Dimension(25, 25));
         return label;
     }
-    
-    public Integer getNumberVehicles() {
+
+    // Método para atualizar a posição do veículo na tela
+    @Override
+    public synchronized void onSectionStateChanged(RoadSection roadSection, boolean hasVehicle) {
+        int x = roadSection.getPosition().x;
+        int y = roadSection.getPosition().y;
+
+        if (!hasVehicle) {
+            addVehicleIconToPanel(x, y, roadSection.getVehicle().getImagePathStr());
+        } else {
+            removeVehicleIconFromPanel(x, y, roadSection.getImageStrPath());
+        }
+    }
+
+    private void addVehicleIconToPanel(int x, int y, String imagePath) {
+        SwingUtilities.invokeLater(() -> {
+            ImageIcon vehicleIcon = new ImageIcon(imagePath);
+            Image vehicleImage = vehicleIcon.getImage();
+            Image scaledVehicleImage = vehicleImage.getScaledInstance(25, 25, Image.SCALE_SMOOTH);
+            vehicleIcon = new ImageIcon(scaledVehicleImage);
+
+            JLabel vehicleLabel = new JLabel(vehicleIcon);
+
+            JPanel panel = celulaPanels[x][y];
+            panel.setLayout(new BorderLayout());
+            panel.add(vehicleLabel, BorderLayout.CENTER);
+            panel.revalidate();
+            panel.repaint();
+        });
+    }
+
+    private void removeVehicleIconFromPanel(int x, int y, String sectionImagePath) {
+        SwingUtilities.invokeLater(() -> {
+            JPanel panel = celulaPanels[x][y];
+            panel.removeAll();
+            panel.revalidate();
+            panel.repaint();
+        });
+    }
+
+    public Integer getSelectedNumberVehicles() {
         int num = 0;
         try {
             num = Integer.parseInt(txtNumberVehicles.getText());
@@ -138,7 +160,7 @@ public class RoadNetworkView extends JFrame {
         }
         return num;
     }
-    
+
     public void addActionToInitButton(ActionListener actionListener) {
         btnInit.addActionListener(actionListener);
     }
