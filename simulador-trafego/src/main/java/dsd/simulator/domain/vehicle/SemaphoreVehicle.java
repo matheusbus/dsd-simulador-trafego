@@ -92,69 +92,71 @@ public class SemaphoreVehicle extends Vehicle {
                     }
                 } else {
                     // Se for um cruzamento, então devo montar o caminho de forma aleatória e verificar se todas as seções estão disponíveis
-                    List<RoadSection> roadSectionsToAquire = new ArrayList<>();
-                    roadSectionsToAquire.add(roadSectionToEnter);
+                    List<RoadSection> roadSectionsPath = new ArrayList<>();
+                    roadSectionsPath.add(roadSectionToEnter);
 
                     possiblePaths = roadSectionToEnter.getPossiblePaths();
                     Position chosenPath = possiblePaths.get(rand.nextInt(possiblePaths.size()));
-
                     RoadSection nextRoadSection = roadNetwork.getRoadSectionAt(chosenPath.x, chosenPath.y);
-                    roadSectionsToAquire.add(nextRoadSection);
+                    roadSectionsPath.add(nextRoadSection);
 
                     while (nextRoadSection.isCrossroad()) {
-                        possiblePaths = nextRoadSection.getPossiblePaths();
-                        chosenPath = possiblePaths.get(rand.nextInt(possiblePaths.size()));
+
+                        // Validação para não entrar em loop no cruzamento
+                        if (roadSectionsPath.size() == 3) {
+                            chosenPath = nextRoadSection.forceExitCrossroad();
+                        } else {
+                            possiblePaths = nextRoadSection.getPossiblePaths();
+                            chosenPath = possiblePaths.get(rand.nextInt(possiblePaths.size()));
+                        }
                         nextRoadSection = roadNetwork.getRoadSectionAt(chosenPath.x, chosenPath.y);
-                        roadSectionsToAquire.add(nextRoadSection);
+                        roadSectionsPath.add(nextRoadSection);
                     }
 
-                    boolean allSectionsAvailable = false;
+                    List<RoadSection> roadSectionsAcquired = new ArrayList<>();
 
-                    while (!allSectionsAvailable) {
-                        for (RoadSection section : roadSectionsToAquire) {
-                            try {
-                                if (!((SemaphoreRoadSection) section).tryEnter(sleepTime)) {
-                                    allSectionsAvailable = false;
-                                    break;
-                                }
-                            } catch (InterruptedException ex) {
-                                Logger.getLogger(SemaphoreVehicle.class.getName()).log(Level.SEVERE, null, ex);
+                    for (RoadSection section : roadSectionsPath) {
+                        try {
+                            if (((SemaphoreRoadSection) section).tryEnter(sleepTime)) {
+                                roadSectionsAcquired.add(section);
                             }
-                            allSectionsAvailable = true;
+                        } catch (InterruptedException ex) {
+                            Logger.getLogger(SemaphoreVehicle.class.getName()).log(Level.SEVERE, null, ex);
                         }
+                    }
 
-                        if (!allSectionsAvailable) {
-                            // Se não conseguiu adquirir todo o caminho, então libera
-                            roadSectionsToAquire.forEach(section -> {
-                                ((SemaphoreRoadSection) section).exit();
-                            });
+                    // Se conseguiu reservar todas, então se move
+                    if (roadSectionsAcquired.size() == roadSectionsPath.size()) {
 
+                        roadSectionsAcquired.forEach(section -> {
+
+                            // Sai da seção em que estava
+                            this.roadSection.setVehicle(null);
+                            ((SemaphoreRoadSection) this.roadSection).exit();
+
+                            // Atribui-se à nova seção
+                            this.roadSection = section;
+                            this.roadSection.setVehicle(this);
                             try {
-                                sleep(rand.nextInt(500));
+                                sleep(sleepTime);
                             } catch (InterruptedException ex) {
                                 Logger.getLogger(SemaphoreVehicle.class.getName()).log(Level.SEVERE, null, ex);
                             }
-                        } else {
-                            // Se conseguiu acessar todas, então vai andando conforme sua velocidade
-                            roadSectionsToAquire.forEach(section -> {
-                                // Sai da seção em que estava
-                                this.roadSection.setVehicle(null);
-                                ((SemaphoreRoadSection) this.roadSection).exit();
+                        });
+                    } else {
+                        // Se não conseguiu acessar todas, então libera as que pegou
+                        roadSectionsAcquired.forEach(section -> {
+                            ((SemaphoreRoadSection) section).exit();
+                        });
 
-                                // Atribui-se à nova seção
-                                this.roadSection = section;
-                                this.roadSection.setVehicle(this);
-                                try {
-                                    sleep(sleepTime);
-                                } catch (InterruptedException ex) {
-                                    Logger.getLogger(SemaphoreVehicle.class.getName()).log(Level.SEVERE, null, ex);
-                                }
-                            });
+                        try {
+                            sleep(rand.nextInt(500));
+                        } catch (InterruptedException ex) {
+                            Logger.getLogger(SemaphoreVehicle.class.getName()).log(Level.SEVERE, null, ex);
                         }
                     }
 
                 }
-
             }
         }
         roadNetwork.removeVehicle(this);

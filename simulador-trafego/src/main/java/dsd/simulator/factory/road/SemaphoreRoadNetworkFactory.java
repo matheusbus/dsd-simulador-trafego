@@ -20,7 +20,7 @@ public class SemaphoreRoadNetworkFactory extends RoadNetworkFactory {
 
     @Override
     public RoadNetwork createRoadNetwork(String fileName) {
-        
+
         String path = System.getProperty("user.dir") + "/src/main/resources/malhas_exemplo/" + fileName;
         BufferedReader br;
         FileReader fr;
@@ -40,16 +40,21 @@ public class SemaphoreRoadNetworkFactory extends RoadNetworkFactory {
                 for (int j = 0; j < lengthX; j++) {
                     Integer rtStr = Integer.valueOf(values[j]);
                     RoadType rt = RoadType.valueOf(rtStr);
-                    RoadSection roadSection = new SemaphoreRoadSection(network, rt, null, new Position(j, i));
-                    roadSections[i][j] = roadSection;
-
+                    RoadSection roadSection;
                     // Adiciona pontos de entrada na malha
-                    if ((i == 0 && roadSection.getType().equals(RoadType.ROAD_DOWN))
-                            || (i == (lengthY - 1) && roadSection.getType().equals(RoadType.ROAD_UP))
-                            || (j == 0 && roadSection.getType().equals(RoadType.ROAD_RIGHT))
-                            || (j == (lengthX - 1) && roadSection.getType().equals(RoadType.ROAD_LEFT))) {
+                    if ((i == 0 && rt.equals(RoadType.ROAD_DOWN))
+                            || (i == (lengthY - 1) && rt.equals(RoadType.ROAD_UP))
+                            || (j == 0 && rt.equals(RoadType.ROAD_RIGHT))
+                            || (j == (lengthX - 1) && rt.equals(RoadType.ROAD_LEFT))) {
+
+                        roadSection = new SemaphoreRoadSection(network, rt, null, new Position(j, i), true);
                         network.addEntryPoint(roadSection);
+                    } else {
+                        roadSection = new SemaphoreRoadSection(network, rt, null, new Position(j, i), false);
+
                     }
+
+                    roadSections[i][j] = roadSection;
                 }
             }
 

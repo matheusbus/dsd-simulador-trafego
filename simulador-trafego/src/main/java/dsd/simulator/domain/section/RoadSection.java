@@ -33,19 +33,22 @@ public abstract class RoadSection implements RoadSectionObservable {
     protected final String imagePathStr;
     protected final Position position;
     protected final boolean isCrossroad;
+    protected boolean isExitPoint;
+    protected boolean isEntryPoint;
 
     protected Vehicle vehicle;
 
     private List<Position> possiblePaths;
 
-    public RoadSection(RoadNetwork network, RoadType type, Vehicle vehicle, Position position) {
+    public RoadSection(RoadNetwork network, RoadType type, Vehicle vehicle, Position position, boolean isEntryPoint) {
         this.roadNetwork = network;
         this.type = type;
         this.vehicle = vehicle;
         this.position = position;
         this.isCrossroad = type.toString().contains("CROSSROAD");
-        this.imagePathStr = loadImageStrPath();
+        this.isEntryPoint = isEntryPoint;
         this.possiblePaths = loadPossiblePaths();
+        this.imagePathStr = loadImageStrPath();
     }
 
     private List<Position> loadPossiblePaths() {
@@ -53,11 +56,13 @@ public abstract class RoadSection implements RoadSectionObservable {
 
         if ((position.x == 0 && type.equals(ROAD_LEFT))
                 || (position.x == roadNetwork.getLengthX() - 1 && type.equals(ROAD_RIGHT))) {
+            this.isExitPoint = true;
             return possiblePaths;
         }
 
         if ((position.y == 0 && type.equals(ROAD_UP))
                 || (position.y == roadNetwork.getLengthY() - 1 && type.equals(ROAD_DOWN))) {
+            this.isExitPoint = true;
             return possiblePaths;
         }
 
@@ -109,6 +114,20 @@ public abstract class RoadSection implements RoadSectionObservable {
         return possiblePaths;
     }
     
+    public Position forceExitCrossroad() {
+        if(possiblePaths.size() == 2) {
+            for(Position p: possiblePaths) {
+                if(!roadNetwork.getRoadSectionAt(p.x, p.y).isCrossroad()) {
+                    return p;
+                }
+            }
+        } else {
+            return possiblePaths.get(0);
+        }
+        
+        return null;
+    }
+    
     public List<Position> getPossiblePaths() {
         return this.possiblePaths;
     }
@@ -135,7 +154,15 @@ public abstract class RoadSection implements RoadSectionObservable {
             }
         }
 
-        return System.getProperty("user.dir") + "/src/main/resources/" + arqName + ".png";
+        String path = System.getProperty("user.dir") + "/src/main/resources/white-network/" + arqName;
+        if(isEntryPoint) {
+            path = path.concat("-entry");
+        }
+        
+        if(isExitPoint) {
+            path = path.concat("-exit");
+        }
+        return  path.concat(".png");
     }
 
     public String getImageStrPath() {

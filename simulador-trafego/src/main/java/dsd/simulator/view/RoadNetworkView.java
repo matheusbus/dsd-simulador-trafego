@@ -27,6 +27,7 @@ public class RoadNetworkView extends JFrame implements RoadSectionObserver {
     private final JTextField txtNumberVehicles;
     private final JButton btnInit;
     private final JPanel[][] celulaPanels;
+    private final Integer defaultSize = 40;
 
     public RoadNetworkView(RoadNetwork network) {
         super("Malha Viária com Veículo");
@@ -41,8 +42,8 @@ public class RoadNetworkView extends JFrame implements RoadSectionObserver {
         int cols = roadSections[0].length;
         celulaPanels = new JPanel[rows][cols];
 
-        int cellWidth = 25; // Largura da célula
-        int cellHeight = 25; // Altura da célula
+        int cellWidth = defaultSize; // Largura da célula
+        int cellHeight = defaultSize; // Altura da célula
         int margin = 10; // Margem adicional
 
         // Calcula o tamanho necessário da tela
@@ -73,7 +74,7 @@ public class RoadNetworkView extends JFrame implements RoadSectionObserver {
 
         JLabel label = new JLabel("Veículos:");
         this.txtNumberVehicles = new NumberOfVehiclesTextField();
-        txtNumberVehicles.setPreferredSize(new Dimension(50, 20));
+        txtNumberVehicles.setPreferredSize(new Dimension(50, 30));
         btnInit = new JButton("Iniciar");
         direitaPanel.add(label);
         direitaPanel.add(txtNumberVehicles);
@@ -96,20 +97,8 @@ public class RoadNetworkView extends JFrame implements RoadSectionObserver {
                 g.drawImage(image, 0, 0, getWidth(), getHeight(), this);
             }
         };
-        celulaPanel.setPreferredSize(new Dimension(25, 25));
+        celulaPanel.setPreferredSize(new Dimension(defaultSize, defaultSize));
         return celulaPanel;
-    }
-
-    private JLabel criarVeiculoLabel() {
-        Random r = new Random();
-        int code = r.nextInt(1, 6);
-        VehicleColor vc = VehicleColor.valueOf(code);
-        String vcString = vc.toString().toLowerCase();
-        String path = System.getProperty("user.dir") + "/src/main/resources/vehicle-" + vcString + ".png";
-        ImageIcon icon = new ImageIcon(path);
-        JLabel label = new JLabel(icon);
-        label.setPreferredSize(new Dimension(25, 25));
-        return label;
     }
 
     // Método para atualizar a posição do veículo na tela
@@ -129,7 +118,7 @@ public class RoadNetworkView extends JFrame implements RoadSectionObserver {
         SwingUtilities.invokeLater(() -> {
             ImageIcon vehicleIcon = new ImageIcon(imagePath);
             Image vehicleImage = vehicleIcon.getImage();
-            Image scaledVehicleImage = vehicleImage.getScaledInstance(25, 25, Image.SCALE_SMOOTH);
+            Image scaledVehicleImage = vehicleImage.getScaledInstance(defaultSize, defaultSize, Image.SCALE_SMOOTH);
             vehicleIcon = new ImageIcon(scaledVehicleImage);
 
             JLabel vehicleLabel = new JLabel(vehicleIcon);

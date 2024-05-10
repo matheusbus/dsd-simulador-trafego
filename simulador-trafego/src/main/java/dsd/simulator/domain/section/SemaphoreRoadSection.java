@@ -14,8 +14,8 @@ public class SemaphoreRoadSection extends RoadSection {
     
     private final Semaphore semaphore;
     
-    public SemaphoreRoadSection(RoadNetwork network, RoadType type, Vehicle vehicle, Position position) {
-        super(network, type, vehicle, position);
+    public SemaphoreRoadSection(RoadNetwork network, RoadType type, Vehicle vehicle, Position position, boolean isEntryPoint) {
+        super(network, type, vehicle, position, isEntryPoint);
         this.semaphore = new Semaphore(1);
     }
 

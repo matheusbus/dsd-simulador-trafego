@@ -6,8 +6,7 @@ public enum VehicleColor {
     BLUE(2),
     GREEN(3),
     PINK(4),
-    WHITE(5),
-    YELLOW(6);
+    YELLOW(5);
     
     
     private int code;

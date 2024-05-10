@@ -16,8 +16,8 @@ public class MonitorRoadSection extends RoadSection {
     
     // Possivelmente vai ter uma lista de lockers - cada lock vai ser a seção que o carro quer entrar
     
-    public MonitorRoadSection(RoadNetwork network, RoadType type, Vehicle vehicle, Position position) {
-        super(network, type, vehicle, position);
+    public MonitorRoadSection(RoadNetwork network, RoadType type, Vehicle vehicle, Position position, boolean isEntryPoint) {
+        super(network, type, vehicle, position, isEntryPoint);
     }
     
 }
