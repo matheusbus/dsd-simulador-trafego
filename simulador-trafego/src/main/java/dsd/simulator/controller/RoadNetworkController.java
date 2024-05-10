@@ -32,9 +32,6 @@ public final class RoadNetworkController {
         this.rnv = new RoadNetworkView(roadNetwork);
         initButtons();
         this.rnv.setVisible(true);
-
-        // Método mockado
-        //startTraffic();
     }
 
     public void initButtons() {
@@ -49,9 +46,10 @@ public final class RoadNetworkController {
         roadNetwork
             .setMaxActiveVehicles(maxActiveVehicles)
             .startSimulation();
+        
     }
 
-    public void imprimir(RoadNetwork roadNetwork) {
+    public void printRoadNetwork(RoadNetwork roadNetwork) {
         RoadSection[][] roadSections = roadNetwork.getRoadSections();
 
         for (int i = 0; i < roadSections.length; i++) {

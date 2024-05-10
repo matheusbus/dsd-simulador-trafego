@@ -134,7 +134,7 @@ public class RoadNetworkView extends JFrame implements RoadSectionObserver {
 
             JLabel vehicleLabel = new JLabel(vehicleIcon);
 
-            JPanel panel = celulaPanels[x][y];
+            JPanel panel = celulaPanels[y][x];
             panel.setLayout(new BorderLayout());
             panel.add(vehicleLabel, BorderLayout.CENTER);
             panel.revalidate();
@@ -144,7 +144,7 @@ public class RoadNetworkView extends JFrame implements RoadSectionObserver {
 
     private void removeVehicleIconFromPanel(int x, int y, String sectionImagePath) {
         SwingUtilities.invokeLater(() -> {
-            JPanel panel = celulaPanels[x][y];
+            JPanel panel = celulaPanels[y][x];
             panel.removeAll();
             panel.revalidate();
             panel.repaint();

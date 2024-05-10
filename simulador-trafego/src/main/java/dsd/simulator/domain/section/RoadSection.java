@@ -32,6 +32,7 @@ public abstract class RoadSection implements RoadSectionObservable {
     protected final RoadType type;
     protected final String imagePathStr;
     protected final Position position;
+    protected final boolean isCrossroad;
 
     protected Vehicle vehicle;
 
@@ -42,7 +43,7 @@ public abstract class RoadSection implements RoadSectionObservable {
         this.type = type;
         this.vehicle = vehicle;
         this.position = position;
-
+        this.isCrossroad = type.toString().contains("CROSSROAD");
         this.imagePathStr = loadImageStrPath();
         this.possiblePaths = loadPossiblePaths();
     }
@@ -51,7 +52,7 @@ public abstract class RoadSection implements RoadSectionObservable {
         List<Position> possiblePaths = new ArrayList<>();
 
         if ((position.x == 0 && type.equals(ROAD_LEFT))
-                || (position.x == roadNetwork.getLengthY() - 1 && type.equals(ROAD_RIGHT))) {
+                || (position.x == roadNetwork.getLengthX() - 1 && type.equals(ROAD_RIGHT))) {
             return possiblePaths;
         }
 
@@ -107,6 +108,10 @@ public abstract class RoadSection implements RoadSectionObservable {
 
         return possiblePaths;
     }
+    
+    public List<Position> getPossiblePaths() {
+        return this.possiblePaths;
+    }
 
     private String loadImageStrPath() {
         final String arqName;
@@ -154,6 +159,10 @@ public abstract class RoadSection implements RoadSectionObservable {
 
     public Position getPosition() {
         return position;
+    }
+    
+    public boolean isCrossroad() {
+        return isCrossroad;
     }
 
     @Override

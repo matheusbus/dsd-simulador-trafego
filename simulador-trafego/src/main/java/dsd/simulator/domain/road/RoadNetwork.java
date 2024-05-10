@@ -40,6 +40,16 @@ public abstract class RoadNetwork {
         return maxActiveVechiles;
     }
     
+    public void addVehicle(Vehicle v) {
+        this.activeVehicles.add(v);
+    }
+    
+    public void removeVehicle(Vehicle v) {
+        if(activeVehicles.indexOf(v) != -1) {
+            activeVehicles.remove(v);
+        }
+    }
+    
     public int getLengthX() {
         return lengthX;
     }
@@ -67,7 +77,7 @@ public abstract class RoadNetwork {
     public RoadSection getRoadSectionAt(int x, int y) {
         RoadSection rs;
         try {
-            rs = this.roadSections[x][y];
+            rs = this.roadSections[y][x];
         } catch (ArrayIndexOutOfBoundsException ex) {
             return null;
         }
