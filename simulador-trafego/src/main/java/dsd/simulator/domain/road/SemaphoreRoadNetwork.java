@@ -24,7 +24,7 @@ public class SemaphoreRoadNetwork extends RoadNetwork {
                     
                     // Insere um novo veículo na malha
                     var v = factory.createVehicle(this);
-                    activeVehicles.add(v);
+                    addVehicle(v);
                     
                     v.start();
                 }
@@ -43,8 +43,12 @@ public class SemaphoreRoadNetwork extends RoadNetwork {
 
     @Override
     public void stopSimulation() {
-        // Verificar se só setando a malha como inativa ela vai parar de inserir (é pra parar rsrs)
         this.active = false;
+    }
+
+    @Override
+    public void immediatelyStopSimulation() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
     
 }

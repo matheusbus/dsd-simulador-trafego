@@ -2,11 +2,14 @@ package dsd.simulator.domain.road;
 
 import dsd.simulator.domain.section.RoadSection;
 import dsd.simulator.domain.vehicle.Vehicle;
+import dsd.simulator.observer.RoadNetworkObservable;
+import dsd.simulator.observer.RoadNetworkObserver;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class RoadNetwork {
-
+public abstract class RoadNetwork implements RoadNetworkObservable {
+    
+    private final List<RoadNetworkObserver> observers = new ArrayList<>();
     protected RoadSection[][] roadSections;
     
     protected final int lengthX;
@@ -30,6 +33,7 @@ public abstract class RoadNetwork {
     
     public abstract void startSimulation();
     public abstract void stopSimulation();
+    public abstract void immediatelyStopSimulation();
 
     public RoadNetwork setMaxActiveVehicles(Integer maxActiveVehicles) {
         this.maxActiveVechiles = maxActiveVehicles;
@@ -42,12 +46,17 @@ public abstract class RoadNetwork {
     
     public void addVehicle(Vehicle v) {
         this.activeVehicles.add(v);
+        
+        notify(this.activeVehicles.size());
     }
     
     public void removeVehicle(Vehicle v) {
         if(activeVehicles.indexOf(v) != -1) {
+            v.setActive(false);
             activeVehicles.remove(v);
         }
+        
+        notify(this.activeVehicles.size());
     }
     
     public int getLengthX() {
@@ -91,4 +100,22 @@ public abstract class RoadNetwork {
     public List<RoadSection> getEntryPoints() {
         return this.entryPoints;
     }
+
+    @Override
+    public void addObserver(RoadNetworkObserver observer) {
+        this.observers.add(observer);
+    }
+
+    @Override
+    public void removeObserver(RoadNetworkObserver observer) {
+        this.observers.remove(observer);
+    }
+    
+    @Override
+    public void notify(int numberOfVehicles) {
+        for(RoadNetworkObserver o : this.observers) {
+            o.onNumberOfVehiclesChanged(numberOfVehicles);
+        }
+    }
+    
 }

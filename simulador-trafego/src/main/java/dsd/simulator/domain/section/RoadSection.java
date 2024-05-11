@@ -26,7 +26,7 @@ import java.util.List;
  */
 public abstract class RoadSection implements RoadSectionObservable {
 
-    private List<RoadSectionObserver> observers = new ArrayList<>();
+    private final List<RoadSectionObserver> observers = new ArrayList<>();
 
     protected final RoadNetwork roadNetwork;
     protected final RoadType type;
@@ -154,7 +154,7 @@ public abstract class RoadSection implements RoadSectionObservable {
             }
         }
 
-        String path = System.getProperty("user.dir") + "/src/main/resources/white-network/" + arqName;
+        String path = System.getProperty("user.dir") + "/src/main/resources/custom-network/" + arqName;
         if(isEntryPoint) {
             path = path.concat("-entry");
         }

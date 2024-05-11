@@ -2,30 +2,35 @@ package dsd.simulator.view;
 
 import dsd.simulator.domain.road.RoadNetwork;
 import dsd.simulator.domain.section.RoadSection;
-import dsd.simulator.domain.vehicle.VehicleColor;
-import dsd.simulator.observer.RoadSectionObservable;
+import dsd.simulator.observer.RoadNetworkObserver;
 import java.awt.*;
 import java.awt.event.ActionListener;
-import java.util.Random;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
 import dsd.simulator.observer.RoadSectionObserver;
-import dsd.simulator.view.component.NumberOfVehiclesTextField;
+import dsd.simulator.view.component.BorderedPanel;
+import javax.swing.JSpinner;
+import javax.swing.SpinnerNumberModel;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
 /**
  *
  * @author Matheus
  */
-public class RoadNetworkView extends JFrame implements RoadSectionObserver {
+public class RoadNetworkView extends JFrame implements RoadSectionObserver, RoadNetworkObserver {
 
-    private final JTextField txtNumberVehicles;
+    //private final JTextField txtNumberVehicles;
+    private final JSpinner txtNumberVehicles;
+    private final JLabel lblNumVeiculosAtivos;
     private final JButton btnInit;
+    private final JButton btnStop;
+    private final JButton btnStopImmediately;
+
     private final JPanel[][] celulaPanels;
     private final Integer defaultSize = 40;
 
@@ -36,6 +41,7 @@ public class RoadNetworkView extends JFrame implements RoadSectionObserver {
         JLayeredPane layeredPane = new JLayeredPane();
         setContentPane(layeredPane);
 
+        network.addObserver(this);
         RoadSection[][] roadSections = network.getRoadSections();
 
         int rows = roadSections.length;
@@ -68,21 +74,45 @@ public class RoadNetworkView extends JFrame implements RoadSectionObserver {
         }
 
         // Cria um JPanel para os elementos à direita
-        JPanel direitaPanel = new JPanel();
-        //direitaPanel.setLayout(new GridLayout(30, 1));
-        direitaPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+        JPanel direitaPanel = new BorderedPanel();
+        GridLayout gridLayout = new GridLayout(10, 1); // Define o layout com 30 linhas e 1 coluna;
+        gridLayout.setVgap(10); // Define o espaçamento vertical entre os componentes como 10 pixels
+        direitaPanel.setLayout(gridLayout);
 
+        Font fonte = new Font("Monospaced", Font.BOLD, 20);
         JLabel label = new JLabel("Veículos:");
-        this.txtNumberVehicles = new NumberOfVehiclesTextField();
+        label.setFont(fonte);
+
+        JLabel lblVeiculosAtivos = new JLabel("Veículos ativos:");
+        lblVeiculosAtivos.setFont(fonte);
+        lblVeiculosAtivos.setHorizontalAlignment(SwingConstants.CENTER);
+        this.lblNumVeiculosAtivos = new JLabel("0");
+        lblNumVeiculosAtivos.setHorizontalAlignment(SwingConstants.CENTER);
+        lblNumVeiculosAtivos.setFont(new Font("Monospaced", Font.BOLD, 50));
+
+        this.txtNumberVehicles = new JSpinner(new SpinnerNumberModel(0, 0, 100, 1));
         txtNumberVehicles.setPreferredSize(new Dimension(50, 30));
+
+        Font btnFont = new Font("Monospaced", Font.BOLD, 12);
+
         btnInit = new JButton("Iniciar");
+        btnInit.setFont(btnFont);
+        btnStop = new JButton("Terminar");
+        btnStop.setFont(btnFont);
+        btnStopImmediately = new JButton("Terminar Imediatamente");
+        btnStopImmediately.setFont(btnFont);
+
         direitaPanel.add(label);
         direitaPanel.add(txtNumberVehicles);
         direitaPanel.add(btnInit);
-        direitaPanel.setBounds(screenWidth - 150, 0, 150, screenHeight); // Posição à direita
+        direitaPanel.add(btnStop);
+        direitaPanel.add(btnStopImmediately);
+        direitaPanel.add(lblVeiculosAtivos);
+        direitaPanel.add(lblNumVeiculosAtivos);
+
+        direitaPanel.setBounds(screenWidth - 300, 0, 200, screenHeight); // Posição à direita
         layeredPane.add(direitaPanel, Integer.valueOf(1)); // Adiciona na camada superior (índice 1)
 
-        
         setLocationRelativeTo(null);
     }
 
@@ -143,7 +173,7 @@ public class RoadNetworkView extends JFrame implements RoadSectionObserver {
     public Integer getSelectedNumberVehicles() {
         int num = 0;
         try {
-            num = Integer.parseInt(txtNumberVehicles.getText());
+            num = Integer.parseInt(txtNumberVehicles.getValue().toString());
         } catch (NumberFormatException ex) {
             ex.printStackTrace();
         }
@@ -152,6 +182,23 @@ public class RoadNetworkView extends JFrame implements RoadSectionObserver {
 
     public void addActionToInitButton(ActionListener actionListener) {
         btnInit.addActionListener(actionListener);
+    }
+
+    public void addActionToStopButton(ActionListener actionListener) {
+        btnStop.addActionListener(actionListener);
+    }
+
+    public void addActionToStopImmediatelyButton(ActionListener actionListener) {
+        btnStopImmediately.addActionListener(actionListener);
+    }
+
+    public void setBtnInitEnabled(boolean enabled) {
+        btnInit.setEnabled(enabled);
+    }
+
+    @Override
+    public void onNumberOfVehiclesChanged(int numberOfActiveVehicles) {
+        lblNumVeiculosAtivos.setText(String.valueOf(numberOfActiveVehicles));
     }
 
 }

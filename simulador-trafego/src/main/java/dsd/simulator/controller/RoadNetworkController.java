@@ -38,6 +38,9 @@ public final class RoadNetworkController {
         rnv.addActionToInitButton(((e) -> {
             startTraffic();
         }));
+        rnv.addActionToStopButton((e) -> {
+            stopTraffic();
+        });
     }
 
     public void startTraffic() {
@@ -46,7 +49,10 @@ public final class RoadNetworkController {
         roadNetwork
             .setMaxActiveVehicles(maxActiveVehicles)
             .startSimulation();
-        
+    }
+    
+    public void stopTraffic() {
+        roadNetwork.stopSimulation();
     }
 
     public void printRoadNetwork(RoadNetwork roadNetwork) {
