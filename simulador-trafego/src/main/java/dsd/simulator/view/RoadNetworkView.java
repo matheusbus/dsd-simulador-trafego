@@ -12,6 +12,8 @@ import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 import dsd.simulator.observer.RoadSectionObserver;
+import java.awt.TrayIcon.MessageType;
+import javax.swing.JOptionPane;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
@@ -247,15 +249,23 @@ public class RoadNetworkView extends JFrame implements RoadSectionObserver, Road
         lblFinalizado.setVisible(visible);
     }
 
-    @Override
-    public void onNumberOfVehiclesChanged(int numberOfActiveVehicles) {
-        lblNumVeiculosAtivos.setText(String.valueOf(numberOfActiveVehicles));
-        if (numberOfActiveVehicles == Integer.parseInt(txtNumberVehicles.getValue().toString())) {
-            lblNumVeiculosAtivos.setForeground(Color.GREEN);
-        } else {
-            lblNumVeiculosAtivos.setForeground(Color.RED);
-        }
+    public void showMessage(String message, String title) {
+        JOptionPane.showMessageDialog(rootPane, message, title, MessageType.ERROR.ordinal());
+    }
 
+    @Override
+    public void onNumberOfVehiclesChanged(int numberOfActiveVehicles, boolean isActive) {
+        lblNumVeiculosAtivos.setText(String.valueOf(numberOfActiveVehicles));
+
+        if (!isActive) {
+            lblNumVeiculosAtivos.setForeground(new Color(176, 190, 197));
+        } else {
+            if (numberOfActiveVehicles == Integer.parseInt(txtNumberVehicles.getValue().toString())) {
+                lblNumVeiculosAtivos.setForeground(Color.GREEN);
+            } else {
+                lblNumVeiculosAtivos.setForeground(Color.RED);
+            }
+        }
     }
 
 }

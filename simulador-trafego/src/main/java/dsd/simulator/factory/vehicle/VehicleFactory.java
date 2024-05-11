@@ -5,11 +5,15 @@ import dsd.simulator.domain.vehicle.Vehicle;
 import dsd.simulator.domain.vehicle.VehicleColor;
 import java.util.Random;
 
-public abstract class VehicleFactory {
+public class VehicleFactory {
 
     protected static final Random random = new Random();
     
-    public abstract Vehicle createVehicle(RoadNetwork roadNetwork);
+    public Vehicle createVehicle(RoadNetwork roadNetwork) {
+        VehicleColor color = getRandomColor();
+        int sleepTime = getRandomSleepTime();
+        return new Vehicle(color, sleepTime, roadNetwork);
+    }
     
     protected VehicleColor getRandomColor() {
         VehicleColor[] colors = VehicleColor.values();
@@ -17,7 +21,6 @@ public abstract class VehicleFactory {
     }
     
     protected Integer getRandomSleepTime() {
-        // Validar possibilidade de permitir o usuário escolher velocidade mínima e velocidade máxima
         return random.nextInt(300, 2000);
     }
 

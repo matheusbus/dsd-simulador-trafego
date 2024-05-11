@@ -4,10 +4,16 @@ public enum VehicleColor {
     
     BLACK(1),
     BLUE(2),
-    GREEN(3),
-    PINK(4),
-    YELLOW(5);
-    
+    BROWN(3),
+    CIAN(4),
+    GRAY(5),
+    GREEN(6),
+    ORANGE(7),
+    PINK(8),
+    PURPLE(9),
+    RED(10),
+    WHITE(11),
+    YELLOW(12);
     
     private int code;
     

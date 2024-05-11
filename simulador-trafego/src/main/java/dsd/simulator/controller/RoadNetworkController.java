@@ -24,6 +24,8 @@ public final class RoadNetworkController {
                 factory = new SemaphoreRoadNetworkFactory();
             case "Monitor" ->
                 factory = new MonitorRoadNetworkFactory();
+            case "Troca de Mensagem" ->
+                factory = new MonitorRoadNetworkFactory();
             default ->
                 throw new IllegalArgumentException("Selected implementation type does not exists.");
         }
@@ -49,27 +51,36 @@ public final class RoadNetworkController {
     public void startTraffic() {
         Integer maxActiveVehicles = rnv.getSelectedNumberVehicles();
         Integer insertionRange = rnv.getSelectedInsertionRange();
-        
+
+        if (maxActiveVehicles == 0) {
+            showMessage("A quantidade de veículos não pode ser zero.", "Erro [Quantidade de veículos]");
+            return;
+        } else if (insertionRange < 100) {
+            showMessage("O intervalo de inserção deve ser menor que cem millisegundos.", "Erro [Intervalo de inserção]");
+            return;
+        }
+
         roadNetwork
-            .setInsertionRange(insertionRange)
-            .setMaxActiveVehicles(maxActiveVehicles)
-            .startSimulation();
-        
+                .setInsertionRange(insertionRange)
+                .setMaxActiveVehicles(maxActiveVehicles)
+                .startSimulation();
+
         rnv.setBtnInitEnabled(false);
         rnv.setTxtNumberVehiclesEnabled(false);
         rnv.setTxtInsertionRangeEnabled(false);
-        
+
         rnv.setBtnStopEnabled(true);
         rnv.setBtnStopImmediatelyEnabled(true);
+
     }
-    
+
     public void stopTraffic() {
         roadNetwork.stopSimulation();
         rnv.setBtnStopEnabled(false);
         rnv.setBtnStopImmediatelyEnabled(false);
         rnv.setLblFinalizadoVisible(true);
     }
-    
+
     public void immediatelyStopTraffic() {
         roadNetwork.immediatelyStopSimulation();
         rnv.setBtnStopEnabled(false);
@@ -87,5 +98,9 @@ public final class RoadNetworkController {
             }
             System.out.println();
         }
+    }
+
+    public void showMessage(String message, String title) {
+        rnv.showMessage(message, title);
     }
 }

@@ -1,5 +1,6 @@
 package dsd.simulator.domain.section;
 
+import dsd.simulator.domain.section.utils.Position;
 import dsd.simulator.domain.section.type.RoadType;
 import dsd.simulator.domain.road.RoadNetwork;
 import static dsd.simulator.domain.section.type.RoadType.CROSSROAD_DOWN;
@@ -17,6 +18,7 @@ import static dsd.simulator.domain.section.type.RoadType.ROAD_UP;
 import dsd.simulator.domain.vehicle.Vehicle;
 import dsd.simulator.observer.RoadSectionObservable;
 import dsd.simulator.observer.RoadSectionObserver;
+import dsd.simulator.strategy.PathStrategy;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,6 +40,7 @@ public abstract class RoadSection implements RoadSectionObservable {
 
     protected Vehicle vehicle;
 
+    private PathStrategy pathStrategy;
     private List<Position> possiblePaths;
 
     public RoadSection(RoadNetwork network, RoadType type, Vehicle vehicle, Position position, boolean isEntryPoint) {
@@ -49,8 +52,17 @@ public abstract class RoadSection implements RoadSectionObservable {
         this.isEntryPoint = isEntryPoint;
         this.possiblePaths = loadPossiblePaths();
         this.imagePathStr = loadImageStrPath();
+        this.pathStrategy = getPathStrategy(type);
     }
+    
+    public abstract boolean tryEnter(long time) throws InterruptedException;
+    public abstract void exit();
 
+    private PathStrategy getPathStrategy(RoadType type) {
+        // retorna de acordo com o tipo
+        return null;
+    }
+    
     private List<Position> loadPossiblePaths() {
         List<Position> possiblePaths = new ArrayList<>();
 
@@ -65,52 +77,8 @@ public abstract class RoadSection implements RoadSectionObservable {
             this.isExitPoint = true;
             return possiblePaths;
         }
-
-        switch (type) {
-            case ROAD_UP:
-                possiblePaths.add(new Position(position.x, position.y - 1));
-                break;
-            case ROAD_DOWN:
-                possiblePaths.add(new Position(position.x, position.y + 1));
-                break;
-            case ROAD_LEFT:
-                possiblePaths.add(new Position(position.x - 1, position.y));
-                break;
-            case ROAD_RIGHT:
-                possiblePaths.add(new Position(position.x + 1, position.y));
-                break;
-            case CROSSROAD_UP:
-                possiblePaths.add(new Position(position.x, position.y - 1));
-                break;
-            case CROSSROAD_DOWN:
-                possiblePaths.add(new Position(position.x, position.y + 1));
-                break;
-            case CROSSROAD_LEFT:
-                possiblePaths.add(new Position(position.x - 1, position.y));
-                break;
-            case CROSSROAD_RIGHT:
-                possiblePaths.add(new Position(position.x + 1, position.y));
-                break;
-            case CROSSROAD_UP_RIGHT:
-                possiblePaths.add(new Position(position.x, position.y - 1));
-                possiblePaths.add(new Position(position.x + 1, position.y));
-                break;
-            case CROSSROAD_UP_LEFT:
-                possiblePaths.add(new Position(position.x, position.y - 1));
-                possiblePaths.add(new Position(position.x - 1, position.y));
-                break;
-            case CROSSROAD_DOWN_RIGHT:
-                possiblePaths.add(new Position(position.x, position.y + 1));
-                possiblePaths.add(new Position(position.x + 1, position.y));
-                break;
-            case CROSSROAD_DOWN_LEFT:
-                possiblePaths.add(new Position(position.x, position.y + 1));
-                possiblePaths.add(new Position(position.x - 1, position.y));
-                break;
-            default:
-                return possiblePaths;
-        }
-
+        
+        possiblePaths = pathStrategy.calculatePossiblePaths(position);
         return possiblePaths;
     }
     

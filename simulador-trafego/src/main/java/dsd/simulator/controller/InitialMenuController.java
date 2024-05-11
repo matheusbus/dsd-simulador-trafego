@@ -50,7 +50,7 @@ public final class InitialMenuController {
     }
     
     public List<String> loadImplementationTypes() {
-        return Arrays.asList("Semaphore", "Monitor");
+        return Arrays.asList("Semaphore", "Monitor", "Troca de Mensagem");
     }
 
     public List<String> loadNameOfRoadFiles() {

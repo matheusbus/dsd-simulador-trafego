@@ -2,17 +2,19 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package dsd.simulator.domain.vehicle;
+package dsd.simulator.domain.section.utils;
 
 /**
  *
  * @author matheus
  */
-public class MonitorVehicle extends Vehicle {
-
-    @Override
-    public void run() {
-        
-    }   
+public class Position {
     
+    public Integer x;
+    public Integer y;
+
+    public Position(Integer x, Integer y) {
+        this.x = x;
+        this.y = y;
+    }
 }

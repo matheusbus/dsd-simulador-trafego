@@ -1,8 +1,7 @@
 package dsd.simulator.factory.road;
 
 import dsd.simulator.domain.road.RoadNetwork;
-import dsd.simulator.domain.road.SemaphoreRoadNetwork;
-import dsd.simulator.domain.section.Position;
+import dsd.simulator.domain.section.utils.Position;
 import dsd.simulator.domain.section.RoadSection;
 import dsd.simulator.domain.section.SemaphoreRoadSection;
 import dsd.simulator.domain.section.type.RoadType;
@@ -31,7 +30,7 @@ public class SemaphoreRoadNetworkFactory extends RoadNetworkFactory {
 
             Integer lengthY = Integer.valueOf(br.readLine().trim());
             Integer lengthX = Integer.valueOf(br.readLine().trim());
-            RoadNetwork network = new SemaphoreRoadNetwork(lengthX, lengthY);
+            RoadNetwork network = new RoadNetwork(lengthX, lengthY);
             RoadSection[][] roadSections = new SemaphoreRoadSection[lengthY][lengthX];
 
             for (int i = 0; i < lengthY; i++) {

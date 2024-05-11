@@ -1,5 +1,6 @@
 package dsd.simulator.domain.section;
 
+import dsd.simulator.domain.section.utils.Position;
 import dsd.simulator.domain.section.type.RoadType;
 import dsd.simulator.domain.road.RoadNetwork;
 import dsd.simulator.domain.vehicle.Vehicle;
@@ -19,10 +20,12 @@ public class SemaphoreRoadSection extends RoadSection {
         this.semaphore = new Semaphore(1);
     }
 
+    @Override
     public boolean tryEnter(long time) throws InterruptedException {
         return semaphore.tryAcquire(time, TimeUnit.MILLISECONDS);
     }
 
+    @Override
     public void exit() {
         semaphore.release();
     }
