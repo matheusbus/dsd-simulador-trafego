@@ -12,7 +12,6 @@ import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 import dsd.simulator.observer.RoadSectionObserver;
-import dsd.simulator.view.component.BorderedPanel;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
@@ -24,9 +23,11 @@ import javax.swing.SwingUtilities;
  */
 public class RoadNetworkView extends JFrame implements RoadSectionObserver, RoadNetworkObserver {
 
-    //private final JTextField txtNumberVehicles;
     private final JSpinner txtNumberVehicles;
+    private final JSpinner txtInsertionRange;
+
     private final JLabel lblNumVeiculosAtivos;
+    private final JLabel lblFinalizado;
     private final JButton btnInit;
     private final JButton btnStop;
     private final JButton btnStopImmediately;
@@ -74,44 +75,64 @@ public class RoadNetworkView extends JFrame implements RoadSectionObserver, Road
         }
 
         // Cria um JPanel para os elementos à direita
-        JPanel direitaPanel = new BorderedPanel();
+        JPanel pnlFunctions = new JPanel();
         GridLayout gridLayout = new GridLayout(10, 1); // Define o layout com 30 linhas e 1 coluna;
         gridLayout.setVgap(10); // Define o espaçamento vertical entre os componentes como 10 pixels
-        direitaPanel.setLayout(gridLayout);
+        pnlFunctions.setLayout(gridLayout);
 
-        Font fonte = new Font("Monospaced", Font.BOLD, 20);
-        JLabel label = new JLabel("Veículos:");
-        label.setFont(fonte);
+        Font fonte = new Font("Monospaced", Font.BOLD, 16);
+
+        JLabel lblInsertionRange = new JLabel("Intervalo inserção:");
+        lblInsertionRange.setFont(fonte);
+        this.txtInsertionRange = new JSpinner(new SpinnerNumberModel(100, 100, 1500, 100));
+        txtInsertionRange.setSize(new Dimension(50, 30));
+        JPanel pnlInsertionRange = new JPanel();
+        pnlInsertionRange.setLayout(new FlowLayout(FlowLayout.LEFT));
+        pnlInsertionRange.add(lblInsertionRange);
+        pnlInsertionRange.add(txtInsertionRange);
+        JLabel lblVehicle = new JLabel("Veículos:");
+        lblVehicle.setFont(fonte);
+        this.txtNumberVehicles = new JSpinner(new SpinnerNumberModel(0, 0, 100, 1));
+        txtNumberVehicles.setSize(new Dimension(50, 30));
+        JPanel pnlNumberVehicles = new JPanel();
+        pnlNumberVehicles.add(lblVehicle);
+        pnlNumberVehicles.add(txtNumberVehicles);
+        pnlNumberVehicles.setLayout(new FlowLayout(FlowLayout.LEFT));
+
+        pnlFunctions.add(pnlInsertionRange);
+        pnlFunctions.add(pnlNumberVehicles);
 
         JLabel lblVeiculosAtivos = new JLabel("Veículos ativos:");
         lblVeiculosAtivos.setFont(fonte);
         lblVeiculosAtivos.setHorizontalAlignment(SwingConstants.CENTER);
+        this.lblFinalizado = new JLabel("Finalizado!");
+        lblFinalizado.setFont(fonte);
+        lblFinalizado.setHorizontalAlignment(SwingConstants.CENTER);
+        lblFinalizado.setVisible(false);
         this.lblNumVeiculosAtivos = new JLabel("0");
         lblNumVeiculosAtivos.setHorizontalAlignment(SwingConstants.CENTER);
-        lblNumVeiculosAtivos.setFont(new Font("Monospaced", Font.BOLD, 50));
+        lblNumVeiculosAtivos.setFont(new Font("Monospaced", Font.BOLD, 48));
 
-        this.txtNumberVehicles = new JSpinner(new SpinnerNumberModel(0, 0, 100, 1));
-        txtNumberVehicles.setPreferredSize(new Dimension(50, 30));
-
-        Font btnFont = new Font("Monospaced", Font.BOLD, 12);
+        Font btnFont = new Font("Monospaced", Font.BOLD, 16);
 
         btnInit = new JButton("Iniciar");
         btnInit.setFont(btnFont);
         btnStop = new JButton("Terminar");
         btnStop.setFont(btnFont);
+        btnStop.setEnabled(false);
         btnStopImmediately = new JButton("Terminar Imediatamente");
         btnStopImmediately.setFont(btnFont);
+        btnStopImmediately.setEnabled(false);
 
-        direitaPanel.add(label);
-        direitaPanel.add(txtNumberVehicles);
-        direitaPanel.add(btnInit);
-        direitaPanel.add(btnStop);
-        direitaPanel.add(btnStopImmediately);
-        direitaPanel.add(lblVeiculosAtivos);
-        direitaPanel.add(lblNumVeiculosAtivos);
+        pnlFunctions.add(btnInit);
+        pnlFunctions.add(btnStop);
+        pnlFunctions.add(btnStopImmediately);
+        pnlFunctions.add(lblVeiculosAtivos);
+        pnlFunctions.add(lblNumVeiculosAtivos);
+        pnlFunctions.add(lblFinalizado);
 
-        direitaPanel.setBounds(screenWidth - 300, 0, 200, screenHeight); // Posição à direita
-        layeredPane.add(direitaPanel, Integer.valueOf(1)); // Adiciona na camada superior (índice 1)
+        pnlFunctions.setBounds(screenWidth - 375, 25, 300, 450); // Posição à direita
+        layeredPane.add(pnlFunctions, Integer.valueOf(1)); // Adiciona na camada superior (índice 1)
 
         setLocationRelativeTo(null);
     }
@@ -180,6 +201,16 @@ public class RoadNetworkView extends JFrame implements RoadSectionObserver, Road
         return num;
     }
 
+    public Integer getSelectedInsertionRange() {
+        int num = 0;
+        try {
+            num = Integer.parseInt(txtInsertionRange.getValue().toString());
+        } catch (NumberFormatException ex) {
+            ex.printStackTrace();
+        }
+        return num;
+    }
+
     public void addActionToInitButton(ActionListener actionListener) {
         btnInit.addActionListener(actionListener);
     }
@@ -196,9 +227,35 @@ public class RoadNetworkView extends JFrame implements RoadSectionObserver, Road
         btnInit.setEnabled(enabled);
     }
 
+    public void setBtnStopEnabled(boolean enabled) {
+        btnStop.setEnabled(enabled);
+    }
+
+    public void setBtnStopImmediatelyEnabled(boolean enabled) {
+        btnStopImmediately.setEnabled(enabled);
+    }
+
+    public void setTxtNumberVehiclesEnabled(boolean enabled) {
+        txtNumberVehicles.setEnabled(enabled);
+    }
+
+    public void setTxtInsertionRangeEnabled(boolean enabled) {
+        txtInsertionRange.setEnabled(enabled);
+    }
+
+    public void setLblFinalizadoVisible(boolean visible) {
+        lblFinalizado.setVisible(visible);
+    }
+
     @Override
     public void onNumberOfVehiclesChanged(int numberOfActiveVehicles) {
         lblNumVeiculosAtivos.setText(String.valueOf(numberOfActiveVehicles));
+        if (numberOfActiveVehicles == Integer.parseInt(txtNumberVehicles.getValue().toString())) {
+            lblNumVeiculosAtivos.setForeground(Color.GREEN);
+        } else {
+            lblNumVeiculosAtivos.setForeground(Color.RED);
+        }
+
     }
 
 }

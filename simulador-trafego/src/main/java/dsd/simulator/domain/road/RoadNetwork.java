@@ -18,6 +18,7 @@ public abstract class RoadNetwork implements RoadNetworkObservable {
     protected boolean active;
     protected List<Vehicle> activeVehicles;
     protected Integer maxActiveVechiles;
+    protected Integer insertionRange;
 
     private final List<RoadSection> entryPoints;
 
@@ -81,6 +82,15 @@ public abstract class RoadNetwork implements RoadNetworkObservable {
 
     public void setRoadSections(RoadSection[][] roadSections) {
         this.roadSections = roadSections;
+    }
+
+    public Integer getInsertionRange() {
+        return insertionRange;
+    }
+
+    public RoadNetwork setInsertionRange(Integer insertionRange) {
+        this.insertionRange = insertionRange;
+        return this;
     }
 
     public RoadSection getRoadSectionAt(int x, int y) {

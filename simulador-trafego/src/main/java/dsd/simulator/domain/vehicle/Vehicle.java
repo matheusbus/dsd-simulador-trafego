@@ -42,6 +42,10 @@ public abstract class Vehicle extends Thread {
     public RoadSection getRoadSection() {
         return roadSection;
     }
+    
+    public void setRoadSection(RoadSection roadSection) {
+        this.roadSection = roadSection;
+    }
 
     public RoadNetwork getRoadNetwork() {
         return roadNetwork;

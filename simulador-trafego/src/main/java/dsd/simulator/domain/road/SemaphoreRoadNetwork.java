@@ -1,7 +1,10 @@
 package dsd.simulator.domain.road;
 
+import dsd.simulator.domain.vehicle.Vehicle;
 import dsd.simulator.factory.vehicle.SemaphoreVehicleFactory;
 import dsd.simulator.factory.vehicle.VehicleFactory;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -16,28 +19,28 @@ public class SemaphoreRoadNetwork extends RoadNetwork {
     @Override
     public void startSimulation() {
         VehicleFactory factory = new SemaphoreVehicleFactory();
-        
+
         Thread simulationThread = new Thread(() -> {
             // Enquanto estiver ativa irá inserir veículos respeitando o limite definido
-            while(isActive()) {
-                if(activeVehicles.size() < maxActiveVechiles) {
-                    
+            while (isActive()) {
+                if (activeVehicles.size() < maxActiveVechiles) {
+
                     // Insere um novo veículo na malha
                     var v = factory.createVehicle(this);
                     addVehicle(v);
-                    
+
                     v.start();
                 }
-                
+
                 // Intervalo de tempo de inserção
                 try {
-                    Thread.sleep(1000);
+                    Thread.sleep(insertionRange);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
         });
-        
+
         simulationThread.start();
     }
 
@@ -48,7 +51,11 @@ public class SemaphoreRoadNetwork extends RoadNetwork {
 
     @Override
     public void immediatelyStopSimulation() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        this.active = false;
+
+        for (Vehicle v : activeVehicles) {
+            v.setActive(false);
+        }
     }
-    
+
 }

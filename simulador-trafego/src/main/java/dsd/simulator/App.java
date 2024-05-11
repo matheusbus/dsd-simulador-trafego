@@ -1,6 +1,6 @@
 package dsd.simulator;
 
-import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatMaterialOceanicIJTheme;
+import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatMaterialDarkerIJTheme;
 import dsd.simulator.controller.InitialMenuController;
 
 /**
@@ -10,7 +10,7 @@ import dsd.simulator.controller.InitialMenuController;
 public class App {
     
     public static void main(String[] args) {
-        FlatMaterialOceanicIJTheme.setup();
+        FlatMaterialDarkerIJTheme.setup();
         
         // Chamada do controlador da tela inicial
         var c = new InitialMenuController();

@@ -41,18 +41,40 @@ public final class RoadNetworkController {
         rnv.addActionToStopButton((e) -> {
             stopTraffic();
         });
+        rnv.addActionToStopImmediatelyButton((e) -> {
+            immediatelyStopTraffic();
+        });
     }
 
     public void startTraffic() {
         Integer maxActiveVehicles = rnv.getSelectedNumberVehicles();
-
+        Integer insertionRange = rnv.getSelectedInsertionRange();
+        
         roadNetwork
+            .setInsertionRange(insertionRange)
             .setMaxActiveVehicles(maxActiveVehicles)
             .startSimulation();
+        
+        rnv.setBtnInitEnabled(false);
+        rnv.setTxtNumberVehiclesEnabled(false);
+        rnv.setTxtInsertionRangeEnabled(false);
+        
+        rnv.setBtnStopEnabled(true);
+        rnv.setBtnStopImmediatelyEnabled(true);
     }
     
     public void stopTraffic() {
         roadNetwork.stopSimulation();
+        rnv.setBtnStopEnabled(false);
+        rnv.setBtnStopImmediatelyEnabled(false);
+        rnv.setLblFinalizadoVisible(true);
+    }
+    
+    public void immediatelyStopTraffic() {
+        roadNetwork.immediatelyStopSimulation();
+        rnv.setBtnStopEnabled(false);
+        rnv.setBtnStopImmediatelyEnabled(false);
+        rnv.setLblFinalizadoVisible(true);
     }
 
     public void printRoadNetwork(RoadNetwork roadNetwork) {
