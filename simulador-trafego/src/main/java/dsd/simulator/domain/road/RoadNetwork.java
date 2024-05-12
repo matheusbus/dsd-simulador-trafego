@@ -6,10 +6,7 @@ import dsd.simulator.factory.vehicle.VehicleFactory;
 import dsd.simulator.observer.RoadNetworkObservable;
 import dsd.simulator.observer.RoadNetworkObserver;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class RoadNetwork implements RoadNetworkObservable {
 
@@ -72,14 +69,6 @@ public class RoadNetwork implements RoadNetworkObservable {
     public void immediatelyStopSimulation() throws InterruptedException {
         this.active = false;
         this.interruptedImmediately = true;
-
-        /*
-        for(int i = 0; i < lengthY; i++) {
-            for(int j = 0; j < lengthX; j++) {
-                roadSections[j][i].setVehicle(null);
-            }
-        }
-         */
     }
 
     public RoadNetwork setMaxActiveVehicles(Integer maxActiveVehicles) {

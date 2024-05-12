@@ -33,10 +33,10 @@ public enum RoadType {
     public int getCode() {
         return code;
     }
-    
-        public static RoadType valueOf(int code) {
-        for(RoadType rt : RoadType.values()) {
-            if(code == rt.getCode()) {
+
+    public static RoadType valueOf(int code) {
+        for (RoadType rt : RoadType.values()) {
+            if (code == rt.getCode()) {
                 return rt;
             }
         }
