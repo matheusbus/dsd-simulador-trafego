@@ -8,6 +8,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+/**
+ * Classe que representa o veículo na malha e possui a lógica de movimentação
+ * sobre a malha. Extende a classe Thread para permitir a execução em uma thread
+ * separada.
+ *
+ * @author Matheus
+ */
 public class Vehicle extends Thread {
 
     protected Random rand = new Random();
@@ -20,9 +27,14 @@ public class Vehicle extends Thread {
     protected String imagePathStr;
     protected boolean active;
 
-    public Vehicle() {
-    }
-
+    /**
+     * Constrói um novo veículo com a cor, tempo de dormir e rede de estradas
+     * especificados.
+     *
+     * @param color A cor do veículo.
+     * @param sleepTime O tempo de espera entre os movimentos do veículo.
+     * @param roadNetwork A rede de estradas à qual o veículo pertence.
+     */
     public Vehicle(VehicleColor color, Integer sleepTime, RoadNetwork roadNetwork) {
         this.roadNetwork = roadNetwork;
         this.color = color;
@@ -217,7 +229,7 @@ public class Vehicle extends Thread {
                 }
             }
         }
-        
+
         roadNetwork.removeVehicle(this);
         roadSection.exit();
         roadSection.setVehicle(null);

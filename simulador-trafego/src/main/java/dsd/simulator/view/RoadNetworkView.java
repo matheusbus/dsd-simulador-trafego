@@ -32,6 +32,7 @@ public final class RoadNetworkView extends JFrame implements RoadSectionObserver
     private JButton btnInit;
     private JButton btnStop;
     private JButton btnStopImmediately;
+    private JButton btnRestart;
 
     private JPanel[][] celulaPanels;
     private final Integer defaultSize = 40;
@@ -127,6 +128,10 @@ public final class RoadNetworkView extends JFrame implements RoadSectionObserver
     public void addActionToStopImmediatelyButton(ActionListener actionListener) {
         btnStopImmediately.addActionListener(actionListener);
     }
+    
+    public void addActionToRestartButton(ActionListener actionListener) {
+        btnRestart.addActionListener(actionListener);
+    }
 
     public void setBtnInitEnabled(boolean enabled) {
         btnInit.setEnabled(enabled);
@@ -138,6 +143,10 @@ public final class RoadNetworkView extends JFrame implements RoadSectionObserver
 
     public void setBtnStopImmediatelyEnabled(boolean enabled) {
         btnStopImmediately.setEnabled(enabled);
+    }
+    
+    public void setBtnRestartEnabled(boolean enabled) {
+        btnRestart.setEnabled(enabled);
     }
 
     public void setTxtNumberVehiclesEnabled(boolean enabled) {
@@ -164,13 +173,14 @@ public final class RoadNetworkView extends JFrame implements RoadSectionObserver
             if(numberOfActiveVehicles == 0) {
                 lblFinalizado.setText("Finalizado com sucesso!");
                 lblFinalizado.setForeground(Color.ORANGE);
+                setBtnRestartEnabled(true);
             }
             lblNumVeiculosAtivos.setForeground(new Color(176, 190, 197));
         } else {
             if (numberOfActiveVehicles == Integer.parseInt(txtNumberVehicles.getValue().toString())) {
-                lblNumVeiculosAtivos.setForeground(Color.GREEN);
+                lblNumVeiculosAtivos.setForeground(new Color(0,191,99));
             } else {
-                lblNumVeiculosAtivos.setForeground(Color.RED);
+                lblNumVeiculosAtivos.setForeground(new Color(255,87,87));
             }
         }
     }
@@ -192,7 +202,7 @@ public final class RoadNetworkView extends JFrame implements RoadSectionObserver
 
         // Calcula o tamanho necessário da tela
         int screenWidth = (cols + 10) * cellWidth + margin + 50;
-        int screenHeight = rows == 10 ? 500 : ((rows + 1) * cellHeight + margin);
+        int screenHeight = rows == 10 ? 600 : ((rows + 1) * cellHeight + margin);
 
         // Define o tamanho da tela
         setSize(screenWidth, screenHeight);
@@ -256,12 +266,16 @@ public final class RoadNetworkView extends JFrame implements RoadSectionObserver
 
         btnInit = new JButton("Iniciar");
         btnInit.setFont(btnFont);
-        btnStop = new JButton("Terminar");
+        btnStop = new JButton("Encerrar e Aguardar");
         btnStop.setFont(btnFont);
         btnStop.setEnabled(false);
-        btnStopImmediately = new JButton("Terminar Imediatamente");
+        btnStopImmediately = new JButton("Encerrar Imediatamente");
         btnStopImmediately.setFont(btnFont);
         btnStopImmediately.setEnabled(false);
+        
+        btnRestart = new JButton("Reiniciar");
+        btnRestart.setFont(btnFont);
+        btnRestart.setEnabled(false);
 
         pnlFunctions.add(btnInit);
         pnlFunctions.add(btnStop);
@@ -269,6 +283,7 @@ public final class RoadNetworkView extends JFrame implements RoadSectionObserver
         pnlFunctions.add(lblVeiculosAtivos);
         pnlFunctions.add(lblNumVeiculosAtivos);
         pnlFunctions.add(lblFinalizado);
+        pnlFunctions.add(btnRestart);
 
         pnlFunctions.setBounds(screenWidth - 375, 25, 350, 500);
         layeredPane.add(pnlFunctions, Integer.valueOf(1)); // Adiciona na camada superior (índice 1)

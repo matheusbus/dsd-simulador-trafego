@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package dsd.simulator.factory.section;
 
 import dsd.simulator.domain.road.RoadNetwork;
@@ -12,7 +8,9 @@ import dsd.simulator.domain.section.utils.Position;
 import dsd.simulator.domain.vehicle.Vehicle;
 
 /**
- *
+ * Fábrica para criação de seções de estrada com monitores.
+ * Esta classe é responsável por criar seções de estrada com monitores.
+ * 
  * @author matheus
  */
 public class MonitorRoadSectionFactory extends RoadSectionFactory {

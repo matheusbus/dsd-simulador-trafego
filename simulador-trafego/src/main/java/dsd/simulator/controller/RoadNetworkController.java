@@ -5,10 +5,13 @@ import dsd.simulator.domain.road.RoadNetwork;
 import dsd.simulator.domain.section.RoadSection;
 import dsd.simulator.factory.road.RoadNetworkFactory;
 import dsd.simulator.view.RoadNetworkView;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 /**
- *
+ * Controlador da malha viária
+ * 
+ * Este controlador gerencia as interações relacionadas à simulação da malha viária,
+ * incluindo iniciar e parar o tráfego.
+ * 
  * @author Matheus
  */
 public final class RoadNetworkController {
@@ -16,6 +19,12 @@ public final class RoadNetworkController {
     private final RoadNetworkView rnv;
     private final RoadNetwork roadNetwork;
 
+    /**
+     * Construtor da classe RoadNetworkController
+     * 
+     * @param roadFileName O nome do arquivo de estrada
+     * @param implementationType O tipo de implementação da malha viária
+     */
     public RoadNetworkController(String roadFileName, ImplementationType implementationType) {
         this.roadNetwork = new RoadNetworkFactory().createRoadNetwork(roadFileName, implementationType);
         this.rnv = new RoadNetworkView(roadNetwork);
@@ -23,6 +32,9 @@ public final class RoadNetworkController {
         this.rnv.setVisible(true);
     }
 
+    /**
+     * Inicializa os botões da interface de malha viária
+     */
     public void initButtons() {
         rnv.addActionToInitButton(((e) -> {
             startTraffic();
@@ -33,17 +45,29 @@ public final class RoadNetworkController {
         rnv.addActionToStopImmediatelyButton((e) -> {
             immediatelyStopTraffic();
         });
+        rnv.addActionToRestartButton((e) -> {
+            restartTraffic();
+        });
     }
 
+    /**
+     * Inicia o tráfego na malha viária
+     */
     public void startTraffic() {
         Integer maxActiveVehicles = rnv.getSelectedNumberVehicles();
         Integer insertionRange = rnv.getSelectedInsertionRange();
-
+        
         if (maxActiveVehicles == 0) {
             showMessage("A quantidade de veículos não pode ser zero.", "Erro [Quantidade de veículos]");
             return;
-        } else if (insertionRange < 100) {
-            showMessage("O intervalo de inserção deve ser menor que cem millisegundos.", "Erro [Intervalo de inserção]");
+        }
+        if (insertionRange < 100) {
+            showMessage("O intervalo de inserção não deve ser menor que cem millisegundos.", "Erro [Intervalo de inserção]");
+            return;
+        }
+        
+        if(maxActiveVehicles > roadNetwork.getMaxPossibleActiveVehicles()) {
+            showMessage(String.format("A quantidade máxima de veículos para essa rodovia é de %s veículos!", roadNetwork.getMaxPossibleActiveVehicles()), "Erro [Quantidade de veículos]");
             return;
         }
 
@@ -61,6 +85,9 @@ public final class RoadNetworkController {
 
     }
 
+    /**
+     * Para o tráfego na malha viária aguardando os veículos ativos saírem da malha
+     */
     public void stopTraffic() {
         try {
             roadNetwork.stopSimulation();
@@ -72,6 +99,9 @@ public final class RoadNetworkController {
         rnv.setLblFinalizadoVisible(true);
     }
 
+    /**
+     * Para imediatamente o tráfego na malha viária retirando os veículos da malha
+     */
     public void immediatelyStopTraffic() {
         try {
             roadNetwork.immediatelyStopSimulation();
@@ -82,7 +112,22 @@ public final class RoadNetworkController {
         rnv.setBtnStopImmediatelyEnabled(false);
         rnv.setLblFinalizadoVisible(true);
     }
+    
+    public void restartTraffic() {
+        roadNetwork.restartSimulation();
+        
+        rnv.setBtnInitEnabled(true);
+        rnv.setLblFinalizadoVisible(false);
+        rnv.setTxtNumberVehiclesEnabled(true);
+        rnv.setTxtInsertionRangeEnabled(true);
+        rnv.setBtnRestartEnabled(false);
+    }
 
+    /**
+     * Imprime a representação da malha viária no console
+     * 
+     * @param roadNetwork A rede viária a ser impressa
+     */
     public void printRoadNetwork(RoadNetwork roadNetwork) {
         RoadSection[][] roadSections = roadNetwork.getRoadSections();
 
@@ -95,6 +140,12 @@ public final class RoadNetworkController {
         }
     }
 
+    /**
+     * Exibe uma mensagem na interface de malha viária
+     * 
+     * @param message A mensagem a ser exibida
+     * @param title O título da mensagem
+     */
     public void showMessage(String message, String title) {
         rnv.showMessage(message, title);
     }

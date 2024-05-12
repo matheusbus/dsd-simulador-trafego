@@ -1,11 +1,9 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package dsd.simulator.domain.section.type;
 
 /**
- *
+ * Enumeração que representa os tipos de estradas possíveis na malha.
+ * Cada tipo de estrada é associado a um código inteiro único.
+ * 
  * @author Matheus
  */
 public enum RoadType {
@@ -26,21 +24,39 @@ public enum RoadType {
 
     private final int code;
 
+    /**
+     * Construtor privado da enumeração RoadType.
+     * Associa um código inteiro a cada tipo de estrada.
+     * 
+     * @param code O código inteiro associado ao tipo de estrada.
+     */
     RoadType(int code) {
         this.code = code;
     }
 
+    /**
+     * Obtém o código inteiro associado ao tipo de estrada.
+     * 
+     * @return O código inteiro associado ao tipo de estrada.
+     */
     public int getCode() {
         return code;
     }
 
+    /**
+     * Retorna o tipo de estrada correspondente ao código inteiro especificado.
+     * 
+     * @param code O código inteiro do tipo de estrada desejado.
+     * @return O tipo de estrada correspondente ao código especificado.
+     * @throws IllegalArgumentException Se o código especificado não corresponder a nenhum tipo de estrada existente.
+     */
     public static RoadType valueOf(int code) {
         for (RoadType rt : RoadType.values()) {
             if (code == rt.getCode()) {
                 return rt;
             }
         }
-        throw new IllegalArgumentException("Road type does not exists.");
+        throw new IllegalArgumentException("Road type does not exist.");
     }
 
 }

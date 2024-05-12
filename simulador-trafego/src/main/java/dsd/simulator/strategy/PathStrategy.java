@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package dsd.simulator.strategy;
 
 import dsd.simulator.domain.section.type.RoadType;
@@ -22,15 +18,30 @@ import dsd.simulator.strategy.impl.UpPathStrategy;
 import java.util.List;
 
 /**
- *
+ * A interface PathStrategy define o contrato para estratégias de cálculo de possíveis caminhos.
+ * Cada estratégia implementa o método calculatePossiblePaths para determinar os caminhos possíveis a partir de uma posição atual.
+ * Além disso, fornece um método estático para obter a estratégia de caminho adequada com base no tipo de estrada.
+ * 
  * @author Matheus
  */
 public interface PathStrategy {
 
+    /**
+     * Calcula os possíveis caminhos a partir da posição atual.
+     * 
+     * @param currentPosition A posição atual no mapa da estrada
+     * @return Uma lista de posições representando os caminhos possíveis
+     */
     List<Position> calculatePossiblePaths(Position currentPosition);
 
-    static PathStrategy getPathStrategy(RoadType r) {
-        switch (r) {
+    /**
+     * Obtém a estratégia de caminho apropriada com base no tipo de estrada.
+     * 
+     * @param roadType O tipo de estrada para o qual se deseja obter a estratégia de caminho
+     * @return A estratégia de caminho correspondente ao tipo de estrada
+     */
+    static PathStrategy getPathStrategy(RoadType roadType) {
+        switch (roadType) {
             case NONE -> {
                 return new NonePathStrategy();
             }

@@ -13,12 +13,20 @@ import java.io.FileReader;
 import java.io.IOException;
 
 /**
- *
+ * Fábrica para criação de redes de estradas.
+ * Esta classe é responsável por criar redes de estradas com base em um arquivo de configuração e no tipo de implementação fornecida.
+ * 
  * @author Matheus
  */
 public class RoadNetworkFactory {
 
-       
+    /**
+     * Cria uma nova rede de estradas com base no arquivo e no tipo de implementação fornecidos.
+     * 
+     * @param fileName O nome do arquivo de configuração da rede de estradas.
+     * @param it O tipo de implementação a ser utilizado na criação das seções de estrada.
+     * @return A rede de estradas criada.
+     */
     public RoadNetwork createRoadNetwork(String fileName, ImplementationType it) {
         String path = System.getProperty("user.dir") + "/src/main/resources/malhas_exemplo/" + fileName;
         RoadSectionFactory roadSectionFactory = getRoadSectionFactory(it);
@@ -31,6 +39,7 @@ public class RoadNetworkFactory {
 
             Integer lengthY = Integer.valueOf(br.readLine().trim());
             Integer lengthX = Integer.valueOf(br.readLine().trim());
+            Integer maxPossibleActiveVehicles = 0;
             RoadNetwork network = new RoadNetwork(lengthX, lengthY);
             RoadSection[][] roadSections = new RoadSection[lengthY][lengthX];
 
@@ -43,9 +52,9 @@ public class RoadNetworkFactory {
                     RoadSection roadSection;
                     // Adiciona pontos de entrada na malha
                     if ((i == 0 && rt.equals(RoadType.ROAD_DOWN))
-                            || (i == (lengthY - 1) && rt.equals(RoadType.ROAD_UP))
-                            || (j == 0 && rt.equals(RoadType.ROAD_RIGHT))
-                            || (j == (lengthX - 1) && rt.equals(RoadType.ROAD_LEFT))) {
+                        || (i == (lengthY - 1) && rt.equals(RoadType.ROAD_UP))
+                        || (j == 0 && rt.equals(RoadType.ROAD_RIGHT))
+                        || (j == (lengthX - 1) && rt.equals(RoadType.ROAD_LEFT))) {
 
                         roadSection = roadSectionFactory.createRoadSection(network, rt, null, new Position(j, i), true);
                         network.addEntryPoint(roadSection);
@@ -54,10 +63,15 @@ public class RoadNetworkFactory {
 
                     }
 
+                    if(!roadSection.isCrossroad() && !roadSection.getType().equals(RoadType.NONE)) {
+                        maxPossibleActiveVehicles++;
+                    }
+                    
                     roadSections[i][j] = roadSection;
                 }
             }
 
+            network.setMaxPossibleActiveVehicles(maxPossibleActiveVehicles);
             network.setRoadSections(roadSections);
             return network;
 
@@ -79,5 +93,4 @@ public class RoadNetworkFactory {
             default -> throw new AssertionError();
         }
     }
-
 }

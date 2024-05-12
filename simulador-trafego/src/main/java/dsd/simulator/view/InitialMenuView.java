@@ -1,50 +1,84 @@
 package dsd.simulator.view;
 
-import dsd.simulator.domain.ImplementationType;
 import java.awt.event.ActionListener;
 import java.util.List;
 
 /**
+ * A classe InitialMenuView representa a interface gráfica da tela inicial da
+ * aplicação. Esta tela permite ao usuário selecionar o tipo de implementação e
+ * o arquivo de malha viária para iniciar a simulação.
  *
  * @author matheus
  */
 public final class InitialMenuView extends javax.swing.JFrame {
 
+    /**
+     * Construtor da classe InitialMenuView. Inicializa a interface gráfica da
+     * tela inicial.
+     */
     public InitialMenuView() {
         initLayout();
     }
-    
+
+    /**
+     * Inicializa o layout da tela.
+     */
     public void initLayout() {
         initComponents();
-        this.setLocationRelativeTo(null);
-        this.setResizable(false);
-        this.setSize(365,300);
+        this.setLocationRelativeTo(null); // Centraliza a tela na tela do usuário
+        this.setResizable(false); // Impede o redimensionamento da janela
+        this.setSize(365, 300); // Define o tamanho da janela
     }
-    
+
+    /**
+     * Adiciona um ouvinte de ação ao botão "Let's Start".
+     *
+     * @param action O ouvinte de ação a ser adicionado ao botão
+     */
     public void addActionBtnLetsStart(ActionListener action) {
         this.btnStart.addActionListener(action);
     }
-    
+
+    /**
+     * Define os itens do ComboBox para seleção do tipo de implementação.
+     *
+     * @param items Os itens a serem exibidos no ComboBox
+     */
     public void setCbImplementationTypeItems(List<String> items) {
         items.forEach((i) -> {
             cbImplementationType.addItem(i);
         });
     }
-    
+
+    /**
+     * Define os itens do ComboBox para seleção do arquivo de malha viária.
+     *
+     * @param items Os itens a serem exibidos no ComboBox
+     */
     public void setCbRoadFileItems(List<String> items) {
         items.forEach((i) -> {
             cbRoadFile.addItem(i);
         });
     }
-    
+
+    /**
+     * Obtém o tipo de implementação selecionado pelo usuário.
+     *
+     * @return O tipo de implementação selecionado
+     */
     public String getSelectedImplementationType() {
         return cbImplementationType.getSelectedItem().toString();
     }
-    
+
+    /**
+     * Obtém o arquivo de malha viária selecionado pelo usuário.
+     *
+     * @return O arquivo de malha viária selecionado
+     */
     public String getSelectedRoadFile() {
         return cbRoadFile.getSelectedItem().toString();
     }
-    
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
