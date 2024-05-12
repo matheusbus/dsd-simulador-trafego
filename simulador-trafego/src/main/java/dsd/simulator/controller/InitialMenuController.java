@@ -4,6 +4,7 @@
  */
 package dsd.simulator.controller;
 
+import dsd.simulator.domain.ImplementationType;
 import dsd.simulator.view.InitialMenuView;
 import java.awt.event.ActionEvent;
 import java.io.File;
@@ -42,39 +43,44 @@ public final class InitialMenuController {
     }
 
     public void letsStartApplication() {
-        String selectedImplementation = imv.getSelectedImplementationType();
+        ImplementationType selectedImplementation = ImplementationType.valueOf(imv.getSelectedImplementationType());
         String selectedRoad = imv.getSelectedRoadFile();
         var c = new RoadNetworkController(selectedRoad, selectedImplementation);
 
         imv.dispose();
     }
-    
+
     public List<String> loadImplementationTypes() {
-        return Arrays.asList("Semaphore", "Monitor", "Troca de Mensagem");
+        ImplementationType[] types = ImplementationType.values();
+        List<String> typeStrings = new ArrayList<>();
+        for (ImplementationType type : types) {
+            typeStrings.add(type.toString());
+        }
+        return typeStrings;
     }
 
     public List<String> loadNameOfRoadFiles() {
         List<String> fileNames = new ArrayList<>();
         String path = System.getProperty("user.dir") + "/src/main/resources/malhas_exemplo";
         File dir = new File(path);
-        
-        if(dir.isDirectory()) {
+
+        if (dir.isDirectory()) {
             File[] files = dir.listFiles(new FilenameFilter() {
                 @Override
                 public boolean accept(File dir, String name) {
                     return name.toLowerCase().endsWith(".txt");
                 }
             });
-            
-            if(files != null && files.length > 0) {
-                for(File f: files) {
+
+            if (files != null && files.length > 0) {
+                for (File f : files) {
                     fileNames.add(f.getName());
                 }
             }
-            
+
             fileNames.sort(String::compareToIgnoreCase);
         }
-        
+
         return fileNames;
     }
 }

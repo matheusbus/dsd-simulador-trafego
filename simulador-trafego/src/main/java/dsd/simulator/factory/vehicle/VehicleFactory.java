@@ -21,7 +21,7 @@ public class VehicleFactory {
     }
     
     protected Integer getRandomSleepTime() {
-        return random.nextInt(300, 2000);
+        return random.nextInt(300, 1000);
     }
 
 }

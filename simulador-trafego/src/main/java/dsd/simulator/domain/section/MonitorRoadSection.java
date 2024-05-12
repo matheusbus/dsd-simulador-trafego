@@ -22,7 +22,7 @@ public class MonitorRoadSection extends RoadSection {
 
     public MonitorRoadSection(RoadNetwork network, RoadType type, Vehicle vehicle, Position position, boolean isEntryPoint) {
         super(network, type, vehicle, position, isEntryPoint);
-        this.lock = new ReentrantLock();
+        this.lock = new ReentrantLock(true);
     }
 
     @Override
@@ -32,7 +32,12 @@ public class MonitorRoadSection extends RoadSection {
 
     @Override
     public void exit() {
-        lock.unlock();
+        try {
+            lock.unlock();
+        } catch (IllegalMonitorStateException e) {
+            // Lidar com a exceção, se necessário
+            e.printStackTrace();
+        }
     }
 
 }

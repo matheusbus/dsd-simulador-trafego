@@ -3,13 +3,6 @@ package dsd.simulator.domain.section;
 import dsd.simulator.domain.section.utils.Position;
 import dsd.simulator.domain.section.type.RoadType;
 import dsd.simulator.domain.road.RoadNetwork;
-import static dsd.simulator.domain.section.type.RoadType.CROSSROAD_DOWN;
-import static dsd.simulator.domain.section.type.RoadType.CROSSROAD_DOWN_LEFT;
-import static dsd.simulator.domain.section.type.RoadType.CROSSROAD_LEFT;
-import static dsd.simulator.domain.section.type.RoadType.CROSSROAD_RIGHT;
-import static dsd.simulator.domain.section.type.RoadType.CROSSROAD_UP;
-import static dsd.simulator.domain.section.type.RoadType.CROSSROAD_UP_LEFT;
-import static dsd.simulator.domain.section.type.RoadType.CROSSROAD_UP_RIGHT;
 import static dsd.simulator.domain.section.type.RoadType.NONE;
 import static dsd.simulator.domain.section.type.RoadType.ROAD_DOWN;
 import static dsd.simulator.domain.section.type.RoadType.ROAD_LEFT;
@@ -40,8 +33,8 @@ public abstract class RoadSection implements RoadSectionObservable {
 
     protected Vehicle vehicle;
 
-    private PathStrategy pathStrategy;
-    private List<Position> possiblePaths;
+    private final PathStrategy pathStrategy;
+    private final List<Position> possiblePaths;
 
     public RoadSection(RoadNetwork network, RoadType type, Vehicle vehicle, Position position, boolean isEntryPoint) {
         this.roadNetwork = network;
@@ -50,36 +43,35 @@ public abstract class RoadSection implements RoadSectionObservable {
         this.position = position;
         this.isCrossroad = type.toString().contains("CROSSROAD");
         this.isEntryPoint = isEntryPoint;
+        this.pathStrategy = getPathStrategy(type);
         this.possiblePaths = loadPossiblePaths();
         this.imagePathStr = loadImageStrPath();
-        this.pathStrategy = getPathStrategy(type);
     }
     
     public abstract boolean tryEnter(long time) throws InterruptedException;
     public abstract void exit();
 
     private PathStrategy getPathStrategy(RoadType type) {
-        // retorna de acordo com o tipo
-        return null;
+        return PathStrategy.getPathStrategy(type);
     }
     
     private List<Position> loadPossiblePaths() {
-        List<Position> possiblePaths = new ArrayList<>();
+        List<Position> paths = new ArrayList<>();
 
         if ((position.x == 0 && type.equals(ROAD_LEFT))
                 || (position.x == roadNetwork.getLengthX() - 1 && type.equals(ROAD_RIGHT))) {
             this.isExitPoint = true;
-            return possiblePaths;
+            return paths;
         }
 
         if ((position.y == 0 && type.equals(ROAD_UP))
                 || (position.y == roadNetwork.getLengthY() - 1 && type.equals(ROAD_DOWN))) {
             this.isExitPoint = true;
-            return possiblePaths;
+            return paths;
         }
         
-        possiblePaths = pathStrategy.calculatePossiblePaths(position);
-        return possiblePaths;
+        paths = pathStrategy.calculatePossiblePaths(position);
+        return paths;
     }
     
     public Position forceExitCrossroad() {

@@ -6,6 +6,7 @@ import dsd.simulator.factory.vehicle.VehicleFactory;
 import dsd.simulator.observer.RoadNetworkObservable;
 import dsd.simulator.observer.RoadNetworkObserver;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -19,6 +20,7 @@ public class RoadNetwork implements RoadNetworkObservable {
     protected final int lengthY;
 
     protected boolean active;
+    protected boolean interruptedImmediately;
     protected List<Vehicle> activeVehicles;
     protected Integer maxActiveVechiles;
     protected Integer insertionRange;
@@ -33,6 +35,7 @@ public class RoadNetwork implements RoadNetworkObservable {
         this.lengthY = lengthY;
 
         this.active = true;
+        this.interruptedImmediately = false;
     }
 
     public void startSimulation() {
@@ -62,29 +65,21 @@ public class RoadNetwork implements RoadNetworkObservable {
         simulationThread.start();
     }
 
-    public void stopSimulation() {
+    public void stopSimulation() throws InterruptedException {
         this.active = false;
     }
 
-    public void immediatelyStopSimulation() {
+    public void immediatelyStopSimulation() throws InterruptedException {
         this.active = false;
+        this.interruptedImmediately = true;
 
-        for (Vehicle v : activeVehicles) {
-            v.setActive(false);
-        }
-
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException ex) {
-            Logger.getLogger(RoadNetwork.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-        for (int i = 0; i < lengthY; i++) {
-            for (int j = 0; j < lengthY; j++) {
-                RoadSection section = roadSections[i][j];
-                section.setVehicle(null);
+        /*
+        for(int i = 0; i < lengthY; i++) {
+            for(int j = 0; j < lengthX; j++) {
+                roadSections[j][i].setVehicle(null);
             }
         }
+         */
     }
 
     public RoadNetwork setMaxActiveVehicles(Integer maxActiveVehicles) {
@@ -102,7 +97,7 @@ public class RoadNetwork implements RoadNetworkObservable {
         notify(this.activeVehicles.size());
     }
 
-    public void removeVehicle(Vehicle v) {
+    public synchronized void removeVehicle(Vehicle v) {
         if (activeVehicles.indexOf(v) != -1) {
             v.setActive(false);
             activeVehicles.remove(v);
@@ -125,6 +120,14 @@ public class RoadNetwork implements RoadNetworkObservable {
 
     public void setActive(boolean isActive) {
         this.active = isActive;
+    }
+
+    public boolean isInterruptedImmediately() {
+        return interruptedImmediately;
+    }
+
+    public void setInterruptedImmediately(boolean interruptedImmediately) {
+        this.interruptedImmediately = interruptedImmediately;
     }
 
     public RoadSection[][] getRoadSections() {

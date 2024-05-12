@@ -23,120 +23,23 @@ import javax.swing.SwingUtilities;
  *
  * @author Matheus
  */
-public class RoadNetworkView extends JFrame implements RoadSectionObserver, RoadNetworkObserver {
+public final class RoadNetworkView extends JFrame implements RoadSectionObserver, RoadNetworkObserver {
 
-    private final JSpinner txtNumberVehicles;
-    private final JSpinner txtInsertionRange;
+    private JSpinner txtNumberVehicles;
+    private JSpinner txtInsertionRange;
+    private JLabel lblNumVeiculosAtivos;
+    private JLabel lblFinalizado;
+    private JButton btnInit;
+    private JButton btnStop;
+    private JButton btnStopImmediately;
 
-    private final JLabel lblNumVeiculosAtivos;
-    private final JLabel lblFinalizado;
-    private final JButton btnInit;
-    private final JButton btnStop;
-    private final JButton btnStopImmediately;
-
-    private final JPanel[][] celulaPanels;
+    private JPanel[][] celulaPanels;
     private final Integer defaultSize = 40;
 
     public RoadNetworkView(RoadNetwork network) {
         super("Malha Viária com Veículo");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-        JLayeredPane layeredPane = new JLayeredPane();
-        setContentPane(layeredPane);
-
-        network.addObserver(this);
-        RoadSection[][] roadSections = network.getRoadSections();
-
-        int rows = roadSections.length;
-        int cols = roadSections[0].length;
-        celulaPanels = new JPanel[rows][cols];
-
-        int cellWidth = defaultSize; // Largura da célula
-        int cellHeight = defaultSize; // Altura da célula
-        int margin = 10; // Margem adicional
-
-        // Calcula o tamanho necessário da tela
-        int screenWidth = (cols + 10) * cellWidth + margin;
-        int screenHeight = (rows + 1) * cellHeight + margin;
-
-        // Define o tamanho da tela
-        setSize(screenWidth, screenHeight);
-
-        // Adiciona as células da malha viária
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < cols; j++) {
-                RoadSection section = roadSections[i][j];
-                JPanel celulaPanel = criarCelulaPanel(section);
-                celulaPanel.setBounds(j * cellWidth, i * cellHeight, cellWidth, cellHeight);
-                layeredPane.add(celulaPanel, Integer.valueOf(0)); // Adiciona na camada de fundo (índice 0)
-                celulaPanels[i][j] = celulaPanel; // Adiciona o painel à matriz
-
-                // Registra esta instância como observador da seção de estrada
-                section.addObserver(this);
-            }
-        }
-
-        // Cria um JPanel para os elementos à direita
-        JPanel pnlFunctions = new JPanel();
-        GridLayout gridLayout = new GridLayout(10, 1); // Define o layout com 30 linhas e 1 coluna;
-        gridLayout.setVgap(10); // Define o espaçamento vertical entre os componentes como 10 pixels
-        pnlFunctions.setLayout(gridLayout);
-
-        Font fonte = new Font("Monospaced", Font.BOLD, 16);
-
-        JLabel lblInsertionRange = new JLabel("Intervalo inserção:");
-        lblInsertionRange.setFont(fonte);
-        this.txtInsertionRange = new JSpinner(new SpinnerNumberModel(100, 100, 1500, 100));
-        txtInsertionRange.setSize(new Dimension(50, 30));
-        JPanel pnlInsertionRange = new JPanel();
-        pnlInsertionRange.setLayout(new FlowLayout(FlowLayout.LEFT));
-        pnlInsertionRange.add(lblInsertionRange);
-        pnlInsertionRange.add(txtInsertionRange);
-        JLabel lblVehicle = new JLabel("Veículos:");
-        lblVehicle.setFont(fonte);
-        this.txtNumberVehicles = new JSpinner(new SpinnerNumberModel(0, 0, 100, 1));
-        txtNumberVehicles.setSize(new Dimension(50, 30));
-        JPanel pnlNumberVehicles = new JPanel();
-        pnlNumberVehicles.add(lblVehicle);
-        pnlNumberVehicles.add(txtNumberVehicles);
-        pnlNumberVehicles.setLayout(new FlowLayout(FlowLayout.LEFT));
-
-        pnlFunctions.add(pnlInsertionRange);
-        pnlFunctions.add(pnlNumberVehicles);
-
-        JLabel lblVeiculosAtivos = new JLabel("Veículos ativos:");
-        lblVeiculosAtivos.setFont(fonte);
-        lblVeiculosAtivos.setHorizontalAlignment(SwingConstants.CENTER);
-        this.lblFinalizado = new JLabel("Finalizado!");
-        lblFinalizado.setFont(fonte);
-        lblFinalizado.setHorizontalAlignment(SwingConstants.CENTER);
-        lblFinalizado.setVisible(false);
-        this.lblNumVeiculosAtivos = new JLabel("0");
-        lblNumVeiculosAtivos.setHorizontalAlignment(SwingConstants.CENTER);
-        lblNumVeiculosAtivos.setFont(new Font("Monospaced", Font.BOLD, 48));
-
-        Font btnFont = new Font("Monospaced", Font.BOLD, 16);
-
-        btnInit = new JButton("Iniciar");
-        btnInit.setFont(btnFont);
-        btnStop = new JButton("Terminar");
-        btnStop.setFont(btnFont);
-        btnStop.setEnabled(false);
-        btnStopImmediately = new JButton("Terminar Imediatamente");
-        btnStopImmediately.setFont(btnFont);
-        btnStopImmediately.setEnabled(false);
-
-        pnlFunctions.add(btnInit);
-        pnlFunctions.add(btnStop);
-        pnlFunctions.add(btnStopImmediately);
-        pnlFunctions.add(lblVeiculosAtivos);
-        pnlFunctions.add(lblNumVeiculosAtivos);
-        pnlFunctions.add(lblFinalizado);
-
-        pnlFunctions.setBounds(screenWidth - 375, 25, 300, 450); // Posição à direita
-        layeredPane.add(pnlFunctions, Integer.valueOf(1)); // Adiciona na camada superior (índice 1)
-
-        setLocationRelativeTo(null);
+        initComponents(network);
     }
 
     private JPanel criarCelulaPanel(RoadSection roadSection) {
@@ -258,6 +161,10 @@ public class RoadNetworkView extends JFrame implements RoadSectionObserver, Road
         lblNumVeiculosAtivos.setText(String.valueOf(numberOfActiveVehicles));
 
         if (!isActive) {
+            if(numberOfActiveVehicles == 0) {
+                lblFinalizado.setText("Finalizado com sucesso!");
+                lblFinalizado.setForeground(Color.ORANGE);
+            }
             lblNumVeiculosAtivos.setForeground(new Color(176, 190, 197));
         } else {
             if (numberOfActiveVehicles == Integer.parseInt(txtNumberVehicles.getValue().toString())) {
@@ -266,6 +173,107 @@ public class RoadNetworkView extends JFrame implements RoadSectionObserver, Road
                 lblNumVeiculosAtivos.setForeground(Color.RED);
             }
         }
+    }
+
+    public void initComponents(RoadNetwork network) {
+        JLayeredPane layeredPane = new JLayeredPane();
+        setContentPane(layeredPane);
+
+        network.addObserver(this);
+        RoadSection[][] roadSections = network.getRoadSections();
+
+        int rows = roadSections.length;
+        int cols = roadSections[0].length;
+        celulaPanels = new JPanel[rows][cols];
+
+        int cellWidth = defaultSize; // Largura da célula
+        int cellHeight = defaultSize; // Altura da célula
+        int margin = 10; // Margem adicional
+
+        // Calcula o tamanho necessário da tela
+        int screenWidth = (cols + 10) * cellWidth + margin + 50;
+        int screenHeight = rows == 10 ? 500 : ((rows + 1) * cellHeight + margin);
+
+        // Define o tamanho da tela
+        setSize(screenWidth, screenHeight);
+
+        // Adiciona as células da malha viária
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                RoadSection section = roadSections[i][j];
+                JPanel celulaPanel = criarCelulaPanel(section);
+                celulaPanel.setBounds(j * cellWidth, i * cellHeight, cellWidth, cellHeight);
+                layeredPane.add(celulaPanel, Integer.valueOf(0)); // Adiciona na camada de fundo (índice 0)
+                celulaPanels[i][j] = celulaPanel; // Adiciona o painel à matriz
+
+                // Registra esta instância como observador da seção de estrada
+                section.addObserver(this);
+            }
+        }
+
+        // Cria um JPanel para os elementos à direita
+        JPanel pnlFunctions = new JPanel();
+        GridLayout gridLayout = new GridLayout(10, 1); // Define o layout com 30 linhas e 1 coluna;
+        gridLayout.setVgap(10); // Define o espaçamento vertical entre os componentes como 10 pixels
+        pnlFunctions.setLayout(gridLayout);
+
+        Font fonte = new Font("Monospaced", Font.BOLD, 16);
+
+        JLabel lblInsertionRange = new JLabel("Intervalo inserção:");
+        lblInsertionRange.setForeground(Color.ORANGE);
+        lblInsertionRange.setFont(fonte);
+        this.txtInsertionRange = new JSpinner(new SpinnerNumberModel(100, 100, 1500, 100));
+        txtInsertionRange.setSize(new Dimension(50, 30));
+        JPanel pnlInsertionRange = new JPanel();
+        pnlInsertionRange.setLayout(new FlowLayout(FlowLayout.LEFT));
+        pnlInsertionRange.add(lblInsertionRange);
+        pnlInsertionRange.add(txtInsertionRange);
+        JLabel lblVehicle = new JLabel("Veículos:");
+        lblVehicle.setForeground(Color.ORANGE);
+        lblVehicle.setFont(fonte);
+        this.txtNumberVehicles = new JSpinner(new SpinnerNumberModel(0, 0, 100, 1));
+        txtNumberVehicles.setSize(new Dimension(50, 30));
+        JPanel pnlNumberVehicles = new JPanel();
+        pnlNumberVehicles.add(lblVehicle);
+        pnlNumberVehicles.add(txtNumberVehicles);
+        pnlNumberVehicles.setLayout(new FlowLayout(FlowLayout.LEFT));
+
+        pnlFunctions.add(pnlInsertionRange);
+        pnlFunctions.add(pnlNumberVehicles);
+
+        JLabel lblVeiculosAtivos = new JLabel("Veículos ativos:");
+        lblVeiculosAtivos.setFont(fonte);
+        lblVeiculosAtivos.setHorizontalAlignment(SwingConstants.CENTER);
+        this.lblFinalizado = new JLabel("Finalizando...");
+        lblFinalizado.setFont(fonte);
+        lblFinalizado.setHorizontalAlignment(SwingConstants.CENTER);
+        lblFinalizado.setVisible(false);
+        this.lblNumVeiculosAtivos = new JLabel("0");
+        lblNumVeiculosAtivos.setHorizontalAlignment(SwingConstants.CENTER);
+        lblNumVeiculosAtivos.setFont(new Font("Monospaced", Font.BOLD, 36));
+
+        Font btnFont = new Font("Monospaced", Font.BOLD, 16);
+
+        btnInit = new JButton("Iniciar");
+        btnInit.setFont(btnFont);
+        btnStop = new JButton("Terminar");
+        btnStop.setFont(btnFont);
+        btnStop.setEnabled(false);
+        btnStopImmediately = new JButton("Terminar Imediatamente");
+        btnStopImmediately.setFont(btnFont);
+        btnStopImmediately.setEnabled(false);
+
+        pnlFunctions.add(btnInit);
+        pnlFunctions.add(btnStop);
+        pnlFunctions.add(btnStopImmediately);
+        pnlFunctions.add(lblVeiculosAtivos);
+        pnlFunctions.add(lblNumVeiculosAtivos);
+        pnlFunctions.add(lblFinalizado);
+
+        pnlFunctions.setBounds(screenWidth - 375, 25, 350, 500);
+        layeredPane.add(pnlFunctions, Integer.valueOf(1)); // Adiciona na camada superior (índice 1)
+
+        setLocationRelativeTo(null);
     }
 
 }
