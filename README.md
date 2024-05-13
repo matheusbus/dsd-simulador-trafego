@@ -3,4 +3,4 @@
 
 Autores: Eduardo Sangaletti & Matheus Buschermoehle
 
-Apresentação e Diagrama de classes em pdf estarão disponíveis na pasta "simulador-tráfego"
+Apresentação e Diagrama em pdf estarão disponíveis na pasta "simulador-tráfego"
