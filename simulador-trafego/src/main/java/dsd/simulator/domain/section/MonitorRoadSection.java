@@ -53,7 +53,7 @@ public class MonitorRoadSection extends RoadSection {
             lock.unlock();
         } catch (IllegalMonitorStateException e) {
             // Lidar com a exceção, se necessário
-            e.printStackTrace();
+            // e.printStackTrace();
         }
     }
 
